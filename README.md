@@ -2,13 +2,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, create a virtual environment:
-
-```bash
-pipenv shell
-```
-
-Or, activate the virtual environment:
+First, create or activate the virtual environment:
 
 ```bash
 pipenv shell
