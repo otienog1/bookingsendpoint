@@ -6,7 +6,6 @@ from dotenv import load_dotenv, find_dotenv
 
 db = SQLAlchemy()
 
-
 def create_app():
     app = Flask(__name__)
 
