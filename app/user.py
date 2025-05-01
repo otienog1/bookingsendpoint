@@ -7,7 +7,7 @@ from .models import TimestampMixin
 
 class User(db.Model, TimestampMixin):
     __tablename__ = 'users'
-    
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -16,17 +16,17 @@ class User(db.Model, TimestampMixin):
     last_name = db.Column(db.String(50), nullable=True)
     role = db.Column(db.String(20), default='user')  # 'admin', 'user', etc.
     is_active = db.Column(db.Boolean, default=True)
-    
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
-        
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
     @classmethod
     def get_all(cls):
         return cls.query.all()
-    
+
     def to_dict(self):
         return {
             "id": self.id,
