@@ -2,7 +2,17 @@ from datetime import datetime, timezone
 from enum import unique
 from . import db
 
-from .models import TimestampMixin
+
+class TimestampMixin(object):
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=datetime.now(timezone.utc)
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+    )
 
 
 class Booking(db.Model, TimestampMixin):
@@ -19,12 +29,6 @@ class Booking(db.Model, TimestampMixin):
     teens = db.Column(db.Integer, nullable=True)
     agent = db.Column(db.String(100), nullable=False)
     consultant = db.Column(db.String(100), nullable=False)
-
-    # Add foreign key reference to the user who created the booking
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-    # Define relationship to User model
-    user = db.relationship('User', backref=db.backref('booking', lazy=True))
 
     @classmethod
     def get_all(cls):
@@ -44,6 +48,4 @@ class Booking(db.Model, TimestampMixin):
             "teens": self.teens,
             "agent": self.agent,
             "consultant": self.consultant,
-            "user_id": self.user_id,
-            "created_by": self.user.username if self.user else None
         }
