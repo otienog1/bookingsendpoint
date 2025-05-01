@@ -7,6 +7,7 @@ from functools import wraps
 
 authbp = Blueprint("authbp", __name__)
 
+
 # Authentication decorator
 def token_required(f):
     @wraps(f)
