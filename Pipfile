@@ -10,6 +10,7 @@ flask-sqlalchemy = "*"
 flask-cors = "*"
 gunicorn = "*"
 psycopg2-binary = "*"
+flask-migrate = "*"
 
 [dev-packages]
 
