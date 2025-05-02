@@ -8,9 +8,12 @@ flask = "*"
 python-dotenv = "*"
 flask-sqlalchemy = "*"
 flask-cors = "*"
-pyjwt = "*"
+gunicorn = "*"
+psycopg2-binary = "*"
+flask-migrate = "*"
+jwt = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "3.13"
