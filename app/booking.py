@@ -8,7 +8,7 @@ from .models import TimestampMixin
 class Booking(db.Model, TimestampMixin):
     __tablename__ = 'bookings'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)  # Remove autoincrement to let PostgreSQL handle it
     name = db.Column(db.String(100), nullable=False)
     date_from = db.Column(db.DateTime, nullable=False)
     date_to = db.Column(db.DateTime, nullable=False)
