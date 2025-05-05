@@ -11,7 +11,7 @@ flask-cors = "*"
 gunicorn = "*"
 psycopg2-binary = "*"
 flask-migrate = "*"
-jwt = "*"
+pyjwt = "*"
 
 [dev-packages]
 
