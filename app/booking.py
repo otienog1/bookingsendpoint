@@ -1,14 +1,12 @@
 from datetime import datetime, timezone
-from enum import unique
 from . import db
-
 from .models import TimestampMixin
 
 
 class Booking(db.Model, TimestampMixin):
     __tablename__ = 'bookings'
 
-    id = db.Column(db.Integer, primary_key=True)  # Remove autoincrement to let PostgreSQL handle it
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     date_from = db.Column(db.DateTime, nullable=False)
     date_to = db.Column(db.DateTime, nullable=False)
@@ -18,14 +16,24 @@ class Booking(db.Model, TimestampMixin):
     men = db.Column(db.Integer, nullable=True)
     children = db.Column(db.Integer, nullable=True)
     teens = db.Column(db.Integer, nullable=True)
-    agent = db.Column(db.String(100), nullable=False)
-    consultant = db.Column(db.String(100), nullable=False)
 
-    # Add foreign key reference to the user who created the booking
+    # Replace string field with a foreign key reference to Agent model
+    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'), nullable=True)
+
+    # This will be removed later
+    agent = db.Column(db.String(100), nullable=True)
+
+    # Keep this field as legacy reference for backward compatibility or rename to something else if needed
+    consultant = db.Column(db.String(100), nullable=True)
+
+    # Foreign key reference to the user who created the booking
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     # Define relationship to User model
     user = db.relationship('User', backref=db.backref('bookings', lazy=True))
+
+    # Define relationship to Agent model
+    # agent = db.relationship('Agent', backref=db.backref('bookings', lazy=True))
 
     @classmethod
     def get_all(cls):
@@ -43,7 +51,9 @@ class Booking(db.Model, TimestampMixin):
             "men": self.men,
             "children": self.children,
             "teens": self.teens,
-            "agent": self.agent,
+            "agent_id": self.agent_id,
+            "agent_name": self.agent.name if self.agent else None,
+            "agent_country": self.agent.country if self.agent else None,
             "consultant": self.consultant,
             "user_id": self.user_id,
             "created_by": self.user.username if self.user else None
