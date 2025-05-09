@@ -8,7 +8,6 @@ import secrets
 
 db = SQLAlchemy()
 
-
 def create_app():
     app = Flask(__name__)
     migrate = Migrate(app, db)
@@ -34,6 +33,9 @@ def create_app():
 
     from .authbp import authbp as auth_blueprint
     app.register_blueprint(auth_blueprint)
+
+    from .agentsbp import agentsbp as agents_blueprint
+    app.register_blueprint(agents_blueprint)
 
     return app
 
