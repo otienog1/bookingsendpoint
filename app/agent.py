@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from . import db
 from .models import TimestampMixin
+from flask import current_app
 
 
 class Agent(db.Model, TimestampMixin):
@@ -22,9 +23,6 @@ class Agent(db.Model, TimestampMixin):
     # Define relationship to User model
     user = db.relationship('User', backref=db.backref('agents', lazy=True))
 
-    # Define relationship to Booking model (will be set up in the Booking model)
-    # bookings = db.relationship('Booking', backref='agent_details', lazy=True)
-
     @classmethod
     def get_all(cls):
         return cls.query.all()
@@ -34,17 +32,23 @@ class Agent(db.Model, TimestampMixin):
         return cls.query.filter_by(is_active=True).all()
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "company": self.company,
-            "email": self.email,
-            "phone": self.phone,
-            "country": self.country,
-            "address": self.address,
-            "notes": self.notes,
-            "is_active": self.is_active,
-            "user_id": self.user_id,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at
-        }
+        try:
+            return {
+                "id": self.id,
+                "name": self.name,
+                "company": self.company,
+                "email": self.email,
+                "phone": self.phone,
+                "country": self.country,
+                "address": self.address,
+                "notes": self.notes,
+                "is_active": self.is_active,
+                "user_id": self.user_id,
+                "created_at": self.created_at,
+                "updated_at": self.updated_at
+            }
+        except Exception as e:
+            if current_app:
+                current_app.logger.error(f"Error converting agent {self.id} to dict: {str(e)}")
+            # Return a minimal dictionary with just the ID to avoid breaking the response
+            return {"id": self.id, "error": "Error converting agent data"}

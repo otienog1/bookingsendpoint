@@ -1,6 +1,7 @@
-from datetime import datetime, timezone
 from . import db
 from .models import TimestampMixin
+from flask import current_app
+
 
 
 class Booking(db.Model, TimestampMixin):
@@ -33,28 +34,47 @@ class Booking(db.Model, TimestampMixin):
     user = db.relationship('User', backref=db.backref('bookings', lazy=True))
 
     # Define relationship to Agent model
-    # agent = db.relationship('Agent', backref=db.backref('bookings', lazy=True))
+    agent_relation = db.relationship('Agent', backref=db.backref('bookings', lazy=True), foreign_keys=[agent_id])
 
     @classmethod
     def get_all(cls):
         return cls.query.all()
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "date_from": self.date_from,
-            "date_to": self.date_to,
-            "country": self.country,
-            "pax": self.pax,
-            "ladies": self.ladies,
-            "men": self.men,
-            "children": self.children,
-            "teens": self.teens,
-            "agent_id": self.agent_id,
-            "agent_name": self.agent.name if self.agent else None,
-            "agent_country": self.agent.country if self.agent else None,
-            "consultant": self.consultant,
-            "user_id": self.user_id,
-            "created_by": self.user.username if self.user else None
-        }
+        try:
+            # Get agent information safely
+            agent_name = None
+            agent_country = None
+
+            if self.agent_relation:
+                agent_name = self.agent_relation.name
+                agent_country = self.agent_relation.country
+
+            # Get user information safely
+            created_by = None
+            if self.user:
+                created_by = self.user.username
+
+            return {
+                "id": self.id,
+                "name": self.name,
+                "date_from": self.date_from,
+                "date_to": self.date_to,
+                "country": self.country,
+                "pax": self.pax,
+                "ladies": self.ladies,
+                "men": self.men,
+                "children": self.children,
+                "teens": self.teens,
+                "agent_id": self.agent_id,
+                "agent_name": agent_name,
+                "agent_country": agent_country,
+                "consultant": self.consultant,
+                "user_id": self.user_id,
+                "created_by": created_by
+            }
+        except Exception as e:
+            if current_app:
+                current_app.logger.error(f"Error converting booking {self.id} to dict: {str(e)}")
+            # Return a minimal dictionary with just the ID to avoid breaking the response
+            return {"id": self.id, "error": "Error converting booking data"}

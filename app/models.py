@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from enum import unique
 from . import db
 
 
