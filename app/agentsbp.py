@@ -3,7 +3,6 @@ from .agent import Agent
 from . import db
 from .authbp import token_required
 import csv
-from datetime import datetime
 
 agentsbp = Blueprint("agentsbp", __name__)
 
