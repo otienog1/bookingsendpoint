@@ -1,20 +1,15 @@
-import os
 import logging
 import traceback
 from flask import Flask, request, g, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from flask_pymongo import PyMongo
 from flask_cors import CORS
-from flask_migrate import Migrate
-from dotenv import load_dotenv, find_dotenv
 from app_logging import configure_logging
-import secrets
 import uuid
 
 # Import configuration
 from config import get_config
 
-db = SQLAlchemy()
-
+mongo = PyMongo()
 
 def create_app():
     app_ = Flask(__name__)
@@ -23,8 +18,7 @@ def create_app():
     app_.config.from_object(get_config())
 
     # Initialize extensions
-    db.init_app(app_)
-    migrate = Migrate(app_, db)
+    mongo.init_app(app_)
 
     # Configure CORS with settings from config
     CORS(app_,
@@ -123,6 +117,4 @@ def create_app():
 
 app = create_app()
 
-# Create tables if needed (development only)
-# with app.app_context():
-#     db.create_all()
+# MongoDB will create collections automatically when first document is inserted
