@@ -55,24 +55,41 @@ def fetch_bookings(current_user):
         # Log the MongoDB query for debugging
         current_app.logger.debug(f"MongoDB Query: {mongo_query}")
 
-        bookings = Booking.find_many(mongo_query)
-        current_app.logger.info(f"Successfully fetched {len(bookings)} bookings")
+        # Use aggregation pipeline to join with agents and users collections
+        pipeline = [
+            {"$match": mongo_query},
+            {
+                "$lookup": {
+                    "from": "agents",
+                    "localField": "agent_id", 
+                    "foreignField": "_id",
+                    "as": "agent"
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "user_id",
+                    "foreignField": "_id", 
+                    "as": "user"
+                }
+            },
+            {
+                "$addFields": {
+                    "agent": {"$arrayElemAt": ["$agent", 0]},
+                    "user": {"$arrayElemAt": ["$user", 0]}
+                }
+            }
+        ]
+        
+        bookings = list(mongo.db.bookings.aggregate(pipeline))
+        current_app.logger.info(f"Successfully fetched {len(bookings)} bookings with joins")
 
-        # Get agent and user information for each booking
+        # Convert to dict format
         bookings_data = []
         for booking in bookings:
             try:
-                # Get agent info
-                agent_doc = None
-                if booking.get('agent_id'):
-                    agent_doc = Agent.find_by_id(booking['agent_id'])
-
-                # Get user info
-                user_doc = None
-                if booking.get('user_id'):
-                    user_doc = User.find_by_id(booking['user_id'])
-
-                booking_dict = Booking.to_dict(booking, agent_doc, user_doc)
+                booking_dict = Booking.to_dict(booking, booking.get('agent'), booking.get('user'))
                 bookings_data.append(booking_dict)
             except Exception as e:
                 current_app.logger.error(f"Error converting booking {booking['_id']} to dict: {str(e)}")
