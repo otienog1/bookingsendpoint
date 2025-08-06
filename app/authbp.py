@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, current_app
-from .user import User
-from . import db
+from .mongodb_models import User
+from . import mongo
+from bson import ObjectId
 import jwt
 from datetime import datetime, timedelta
 from functools import wraps
@@ -63,7 +64,7 @@ def token_required(f):
             # Decode token
             data = jwt.decode(token, current_app.config['SECRET_KEY'],
                               algorithms=[current_app.config['JWT_ALGORITHM']])
-            current_user = User.query.get(data['user_id'])
+            current_user = User.find_by_id(data['user_id'])
 
             if not current_user:
                 return jsonify({'error': 'User no longer exists!'}), 401
@@ -72,6 +73,9 @@ def token_required(f):
             return jsonify({'error': 'Token has expired!'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'error': 'Invalid token!'}), 401
+        except Exception as e:
+            current_app.logger.error(f"Token validation error: {str(e)}")
+            return jsonify({'error': 'Token validation failed!'}), 401
 
         return f(current_user, *args, **kwargs)
 
@@ -106,7 +110,7 @@ def refresh_token_required(f):
             if data.get('type') != 'refresh':
                 return jsonify({'error': 'Invalid token type!'}), 401
 
-            current_user = User.query.get(data['user_id'])
+            current_user = User.find_by_id(data['user_id'])
 
             if not current_user:
                 return jsonify({'error': 'User no longer exists!'}), 401
@@ -115,6 +119,9 @@ def refresh_token_required(f):
             return jsonify({'error': 'Refresh token has expired!'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'error': 'Invalid refresh token!'}), 401
+        except Exception as e:
+            current_app.logger.error(f"Refresh token validation error: {str(e)}")
+            return jsonify({'error': 'Refresh token validation failed!'}), 401
 
         return f(current_user, *args, **kwargs)
 
@@ -127,29 +134,26 @@ def register():
 
     try:
         # Check if user already exists
-        existing_user = User.query.filter_by(username=data['username']).first()
+        existing_user = User.find_by_username(data['username'])
         if existing_user:
             return jsonify({'error': 'Username already exists!'}), 400
 
-        existing_email = User.query.filter_by(email=data['email']).first()
+        existing_email = User.find_by_email(data['email'])
         if existing_email:
             return jsonify({'error': 'Email already registered!'}), 400
 
         # Create new user
-        new_user = User(
+        new_user = User.create_user(
             username=data['username'],
             email=data['email'],
+            password=data['password'],
             first_name=data.get('first_name'),
             last_name=data.get('last_name'),
             role=data.get('role', 'user')
         )
-        new_user.set_password(data['password'])
 
-        db.session.add(new_user)
-        db.session.commit()
-
-        current_app.logger.info(f"New user registered: {new_user.username}")
-        return jsonify({'message': 'User registered successfully!', 'user': new_user.to_dict()}), 201
+        current_app.logger.info(f"New user registered: {new_user['username']}")
+        return jsonify({'message': 'User registered successfully!', 'user': User.to_dict(new_user)}), 201
 
     except Exception as e:
         current_app.logger.error(f"Registration error: {str(e)}")
@@ -163,13 +167,13 @@ def login():
     if not data or not data.get('username') or not data.get('password'):
         return jsonify({'error': 'Missing login credentials!'}), 400
 
-    user = User.query.filter_by(username=data['username']).first()
+    user = User.find_by_username(data['username'])
 
-    if not user or not user.check_password(data['password']):
+    if not user or not User.check_password(user, data['password']):
         current_app.logger.warning(f"Failed login attempt for username: {data.get('username')}")
         return jsonify({'error': 'Invalid username or password!'}), 401
 
-    if not user.is_active:
+    if not user['is_active']:
         return jsonify({'error': 'Account is disabled!'}), 401
 
     # Check if user wants "remember me" functionality
@@ -179,11 +183,11 @@ def login():
     if remember_me:
         access_duration = current_app.config['REMEMBER_ACCESS_TOKEN_DURATION']
         refresh_duration = current_app.config['REMEMBER_REFRESH_TOKEN_DURATION']
-        current_app.logger.info(f"User {user.username} logged in with Remember Me")
+        current_app.logger.info(f"User {user['username']} logged in with Remember Me")
     else:
         access_duration = current_app.config['ACCESS_TOKEN_DURATION']
         refresh_duration = current_app.config['REFRESH_TOKEN_DURATION']
-        current_app.logger.info(f"User {user.username} logged in")
+        current_app.logger.info(f"User {user['username']} logged in")
 
     # Calculate expiration times
     token_expiration = datetime.utcnow() + access_duration
@@ -191,15 +195,15 @@ def login():
 
     # Generate JWT access token
     access_token = jwt.encode({
-        'user_id': user.id,
-        'username': user.username,
-        'role': user.role,
+        'user_id': str(user['_id']),
+        'username': user['username'],
+        'role': user['role'],
         'exp': token_expiration
     }, current_app.config['SECRET_KEY'], algorithm=current_app.config['JWT_ALGORITHM'])
 
     # Generate refresh token
     refresh_token = jwt.encode({
-        'user_id': user.id,
+        'user_id': str(user['_id']),
         'type': 'refresh',
         'exp': refresh_expiration
     }, current_app.config['SECRET_KEY'], algorithm=current_app.config['JWT_ALGORITHM'])
@@ -208,7 +212,7 @@ def login():
         'message': 'Login successful!',
         'token': access_token,
         'refresh_token': refresh_token,
-        'user': user.to_dict()
+        'user': User.to_dict(user)
     })
 
 
@@ -233,18 +237,18 @@ def refresh_token(current_user):
 
         # Generate new JWT token with fresh expiration
         new_token = jwt.encode({
-            'user_id': current_user.id,
-            'username': current_user.username,
-            'role': current_user.role,
+            'user_id': str(current_user['_id']),
+            'username': current_user['username'],
+            'role': current_user['role'],
             'exp': token_expiration
         }, current_app.config['SECRET_KEY'], algorithm=current_app.config['JWT_ALGORITHM'])
 
-        current_app.logger.info(f"Token refreshed for user: {current_user.username}")
+        current_app.logger.info(f"Token refreshed for user: {current_user['username']}")
 
         return jsonify({
             'message': 'Token refreshed successfully',
             'token': new_token,
-            'user': current_user.to_dict()
+            'user': User.to_dict(current_user)
         })
     except Exception as e:
         current_app.logger.error(f"Token refresh error: {str(e)}")
@@ -273,7 +277,7 @@ def verify_token(current_user):
 
             return jsonify({
                 'valid': True,
-                'user': current_user.to_dict(),
+                'user': User.to_dict(current_user),
                 'expires_in': remaining_seconds,
                 'expires_at': exp_timestamp,
                 'refresh_window': current_app.config['TOKEN_REFRESH_WINDOW']
@@ -302,7 +306,7 @@ def logout(current_user):
         if refresh_token:
             blacklist_token(refresh_token)
 
-        current_app.logger.info(f"User {current_user.username} logged out")
+        current_app.logger.info(f"User {current_user['username']} logged out")
         return jsonify({'message': 'Logged out successfully'})
     except Exception as e:
         current_app.logger.error(f"Logout error: {str(e)}")
@@ -312,95 +316,104 @@ def logout(current_user):
 @authbp.route('/auth/users', methods=['GET'])
 @token_required
 def get_users(current_user):
-    if current_user.role != 'admin':
+    if current_user['role'] != 'admin':
         return jsonify({'error': 'Unauthorized access!'}), 403
 
-    users = User.query.all()
-    return jsonify({'users': [user.to_dict() for user in users]})
+    users = User.get_all()
+    return jsonify({'users': [User.to_dict(user) for user in users]})
 
 
-@authbp.route('/auth/user/<int:user_id>', methods=['GET'])
+@authbp.route('/auth/user/<user_id>', methods=['GET'])
 @token_required
 def get_user(current_user, user_id):
     # Users can view their own profile, admins can view any profile
-    if current_user.id != user_id and current_user.role != 'admin':
+    if str(current_user['_id']) != user_id and current_user['role'] != 'admin':
         return jsonify({'error': 'Unauthorized access!'}), 403
 
-    user = User.query.get(user_id)
+    user = User.find_by_id(user_id)
     if not user:
         return jsonify({'error': 'User not found!'}), 404
 
-    return jsonify({'user': user.to_dict()})
+    return jsonify({'user': User.to_dict(user)})
 
 
-@authbp.route('/auth/user/<int:user_id>', methods=['PUT'])
+@authbp.route('/auth/user/<user_id>', methods=['PUT'])
 @token_required
 def update_user(current_user, user_id):
     # Users can update their own profile, admins can update any profile
-    if current_user.id != user_id and current_user.role != 'admin':
+    if str(current_user['_id']) != user_id and current_user['role'] != 'admin':
         return jsonify({'error': 'Unauthorized access!'}), 403
 
-    user = User.query.get(user_id)
+    user = User.find_by_id(user_id)
     if not user:
         return jsonify({'error': 'User not found!'}), 404
 
     data = request.get_json()
 
     try:
+        update_data = {}
+        
         # Update user fields
         if 'email' in data:
-            existing_email = User.query.filter_by(email=data['email']).first()
-            if existing_email and existing_email.id != user_id:
+            existing_email = User.find_by_email(data['email'])
+            if existing_email and str(existing_email['_id']) != user_id:
                 return jsonify({'error': 'Email already registered!'}), 400
-            user.email = data['email']
+            update_data['email'] = data['email']
 
         if 'first_name' in data:
-            user.first_name = data['first_name']
+            update_data['first_name'] = data['first_name']
 
         if 'last_name' in data:
-            user.last_name = data['last_name']
+            update_data['last_name'] = data['last_name']
 
         # Only admins can change roles
-        if 'role' in data and current_user.role == 'admin':
-            user.role = data['role']
+        if 'role' in data and current_user['role'] == 'admin':
+            update_data['role'] = data['role']
 
-        if 'is_active' in data and current_user.role == 'admin':
-            user.is_active = data['is_active']
+        if 'is_active' in data and current_user['role'] == 'admin':
+            update_data['is_active'] = data['is_active']
 
         # Update password if provided
         if 'password' in data:
-            user.set_password(data['password'])
+            User.update_password(user_id, data['password'])
 
-        db.session.commit()
-        current_app.logger.info(f"User {user.username} updated by {current_user.username}")
-        return jsonify({'message': 'User updated successfully!', 'user': user.to_dict()})
+        # Update other fields
+        if update_data:
+            User.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": update_data}
+            )
+
+        # Get updated user
+        updated_user = User.find_by_id(user_id)
+        current_app.logger.info(f"User {updated_user['username']} updated by {current_user['username']}")
+        return jsonify({'message': 'User updated successfully!', 'user': User.to_dict(updated_user)})
 
     except Exception as e:
         current_app.logger.error(f"User update error: {str(e)}")
         return jsonify({'error': str(e)}), 400
 
 
-@authbp.route('/auth/user/<int:user_id>', methods=['DELETE'])
+@authbp.route('/auth/user/<user_id>', methods=['DELETE'])
 @token_required
 def delete_user(current_user, user_id):
     # Only admins can delete users
-    if current_user.role != 'admin':
+    if current_user['role'] != 'admin':
         return jsonify({'error': 'Unauthorized access!'}), 403
 
-    user = User.query.get(user_id)
+    user = User.find_by_id(user_id)
     if not user:
         return jsonify({'error': 'User not found!'}), 404
 
     # Prevent deleting the last admin account
-    if user.role == 'admin':
-        admin_count = User.query.filter_by(role='admin').count()
+    if user['role'] == 'admin':
+        admin_count = len(User.find_many({"role": "admin"}))
         if admin_count <= 1:
             return jsonify({'error': 'Cannot delete the last admin account!'}), 400
 
     try:
-        db.session.delete(user)
-        db.session.commit()
-        current_app.logger.info(f"User {user.username} deleted by {current_user.username}")
+        User.delete_one({"_id": ObjectId(user_id)})
+        current_app.logger.info(f"User {user['username']} deleted by {current_user['username']}")
         return jsonify({'message': 'User deleted successfully!'})
     except Exception as e:
         current_app.logger.error(f"User deletion error: {str(e)}")
@@ -410,7 +423,7 @@ def delete_user(current_user, user_id):
 @authbp.route('/auth/profile', methods=['GET'])
 @token_required
 def get_profile(current_user):
-    return jsonify({'user': current_user.to_dict()})
+    return jsonify({'user': User.to_dict(current_user)})
 
 
 # Health check endpoint for authentication service

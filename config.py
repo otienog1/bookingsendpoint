@@ -9,13 +9,13 @@ load_dotenv()
 
 class Config:
     """Base configuration"""
-    # Database
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "SQLALCHEMY_DATABASE_URI",
-        "postgresql://postgres:postgres@localhost:5432/bookings_db"
+    # MongoDB Database
+    MONGO_URI = os.getenv(
+        "MONGO_URI",
+        "mongodb://localhost:27017/bookings_db"
     )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ECHO = False
+    # Specify database name explicitly for Flask-PyMongo
+    MONGO_DBNAME = os.getenv("MONGO_DBNAME", "bookings_db")
 
     # JWT Settings
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
@@ -55,7 +55,6 @@ class Config:
 class DevelopmentConfig(Config):
     """Development configuration"""
     DEBUG = True
-    SQLALCHEMY_ECHO = True
     # Shorter token durations for testing
     # ACCESS_TOKEN_DURATION = timedelta(minutes=5)  # Uncomment for testing
 
@@ -63,7 +62,6 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     """Production configuration"""
     DEBUG = False
-    SQLALCHEMY_ECHO = False
 
     # Enforce secure cookies in production
     SESSION_COOKIE_SECURE = True
@@ -78,7 +76,7 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     """Testing configuration"""
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    MONGO_URI = "mongodb://localhost:27017/bookings_test_db"
     WTF_CSRF_ENABLED = False
 
     # Shorter durations for testing

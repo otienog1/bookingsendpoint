@@ -6,15 +6,15 @@ name = "pypi"
 [packages]
 flask = "*"
 python-dotenv = "*"
-flask-sqlalchemy = "*"
 flask-cors = "*"
 gunicorn = "*"
-psycopg2-binary = "*"
-flask-migrate = "*"
+pymongo = "*"
+flask-pymongo = "*"
 pyjwt = "*"
 requests = "*"
 redis = "*"
 python-json-logger = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
