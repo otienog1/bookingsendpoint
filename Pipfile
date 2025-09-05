@@ -8,13 +8,13 @@ flask = "*"
 python-dotenv = "*"
 flask-cors = "*"
 gunicorn = "*"
-flask-pymongo = "*"
 pyjwt = "*"
 requests = "*"
 redis = "*"
 python-json-logger = "*"
 psycopg2-binary = "*"
 pymongo = {extras = ["srv"], version = "==3.12"}
+flask-pymongo = "*"
 
 [dev-packages]
 

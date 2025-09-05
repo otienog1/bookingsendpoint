@@ -5,11 +5,22 @@ from bson import ObjectId
 import jwt
 from datetime import datetime, timedelta
 from functools import wraps
+import secrets
+try:
+    import smtplib
+    from email.mime.text import MimeText
+    from email.mime.multipart import MimeMultipart
+    EMAIL_SUPPORT = True
+except ImportError:
+    EMAIL_SUPPORT = False
 
 authbp = Blueprint("authbp", __name__)
 
 # Token blacklist storage (in-memory for now, use Redis in production)
 token_blacklist = set()
+
+# Password reset token storage (in-memory for now, use Redis in production)
+password_reset_tokens = {}
 
 
 def is_token_blacklisted(token):
@@ -39,6 +50,114 @@ def blacklist_token(token):
                 pass
         else:
             token_blacklist.add(token)
+
+
+def send_password_reset_email(email, reset_token):
+    """Send password reset email"""
+    if not EMAIL_SUPPORT:
+        current_app.logger.warning("Email support not available - password reset email not sent")
+        # In development, just log the reset token
+        current_app.logger.info(f"Password reset token for {email}: {reset_token}")
+        return True
+        
+    try:
+        # Email configuration from app config
+        smtp_server = current_app.config.get('SMTP_SERVER', 'localhost')
+        smtp_port = current_app.config.get('SMTP_PORT', 587)
+        smtp_username = current_app.config.get('SMTP_USERNAME')
+        smtp_password = current_app.config.get('SMTP_PASSWORD')
+        from_email = current_app.config.get('FROM_EMAIL', 'noreply@safaribuookings.com')
+        
+        # Create the email message
+        msg = MimeMultipart('alternative')
+        msg['Subject'] = 'Password Reset Request - Safari Bookings'
+        msg['From'] = from_email
+        msg['To'] = email
+        
+        # Create the reset URL
+        frontend_url = current_app.config.get('FRONTEND_URL', 'http://localhost:3000')
+        reset_url = f"{frontend_url}/reset-password?token={reset_token}"
+        
+        # Email content
+        text_content = f"""
+        Hello,
+        
+        You have requested to reset your password for your Safari Bookings account.
+        
+        Please click on the following link to reset your password:
+        {reset_url}
+        
+        This link will expire in 1 hour for security reasons.
+        
+        If you did not request this password reset, please ignore this email.
+        
+        Best regards,
+        Safari Bookings Team
+        """
+        
+        html_content = f"""
+        <html>
+        <body>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #2563eb;">Password Reset Request</h2>
+                <p>Hello,</p>
+                <p>You have requested to reset your password for your Safari Bookings account.</p>
+                <p>Please click on the button below to reset your password:</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{reset_url}" 
+                       style="background-color: #2563eb; color: white; padding: 12px 24px; 
+                              text-decoration: none; border-radius: 6px; display: inline-block;">
+                        Reset Password
+                    </a>
+                </div>
+                <p style="font-size: 14px; color: #666;">
+                    If the button doesn't work, you can also copy and paste this link into your browser:
+                </p>
+                <p style="font-size: 14px; color: #666; word-break: break-all;">
+                    {reset_url}
+                </p>
+                <p style="font-size: 14px; color: #666;">
+                    This link will expire in 1 hour for security reasons.
+                </p>
+                <p style="font-size: 14px; color: #666;">
+                    If you did not request this password reset, please ignore this email.
+                </p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+                <p style="font-size: 12px; color: #999;">
+                    Best regards,<br>
+                    Safari Bookings Team
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Attach parts
+        part1 = MimeText(text_content, 'plain')
+        part2 = MimeText(html_content, 'html')
+        msg.attach(part1)
+        msg.attach(part2)
+        
+        # Send the email
+        if smtp_username and smtp_password:
+            # Use SMTP with authentication
+            server = smtplib.SMTP(smtp_server, smtp_port)
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+            server.send_message(msg)
+            server.quit()
+        else:
+            # Use local SMTP without authentication (for development)
+            server = smtplib.SMTP(smtp_server, smtp_port)
+            server.send_message(msg)
+            server.quit()
+            
+        current_app.logger.info(f"Password reset email sent to {email}")
+        return True
+        
+    except Exception as e:
+        current_app.logger.error(f"Failed to send password reset email to {email}: {str(e)}")
+        return False
 
 
 # Authentication decorator
@@ -424,6 +543,115 @@ def delete_user(current_user, user_id):
 @token_required
 def get_profile(current_user):
     return jsonify({'user': User.to_dict(current_user)})
+
+
+@authbp.route('/auth/forgot-password', methods=['POST'])
+def forgot_password():
+    """
+    Initiate password reset process
+    """
+    data = request.get_json()
+    
+    if not data or not data.get('email'):
+        return jsonify({'error': 'Email is required!'}), 400
+    
+    email = data['email'].lower().strip()
+    
+    try:
+        # Find user by email
+        user = User.find_by_email(email)
+        
+        # Always return success message for security (don't reveal if email exists)
+        if user:
+            if not user['is_active']:
+                current_app.logger.warning(f"Password reset attempt for inactive user: {email}")
+            else:
+                # Generate secure reset token
+                reset_token = secrets.token_urlsafe(32)
+                
+                # Store token with expiration (1 hour)
+                expiration = datetime.utcnow() + timedelta(hours=1)
+                password_reset_tokens[reset_token] = {
+                    'user_id': str(user['_id']),
+                    'email': email,
+                    'expires_at': expiration
+                }
+                
+                # Send password reset email
+                if send_password_reset_email(email, reset_token):
+                    current_app.logger.info(f"Password reset initiated for user: {email}")
+                else:
+                    current_app.logger.error(f"Failed to send reset email for user: {email}")
+                    return jsonify({'error': 'Failed to send reset email. Please try again.'}), 500
+        else:
+            current_app.logger.warning(f"Password reset attempt for non-existent email: {email}")
+        
+        return jsonify({
+            'message': 'If an account with that email exists, we have sent a password reset link.'
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Forgot password error: {str(e)}")
+        return jsonify({'error': 'An error occurred. Please try again.'}), 500
+
+
+@authbp.route('/auth/reset-password', methods=['POST'])
+def reset_password():
+    """
+    Reset password using reset token
+    """
+    data = request.get_json()
+    
+    if not data or not data.get('token') or not data.get('password'):
+        return jsonify({'error': 'Token and new password are required!'}), 400
+    
+    reset_token = data['token']
+    new_password = data['password']
+    
+    try:
+        # Check if token exists and is valid
+        if reset_token not in password_reset_tokens:
+            return jsonify({'error': 'Invalid or expired reset token!'}), 400
+        
+        token_data = password_reset_tokens[reset_token]
+        
+        # Check if token has expired
+        if datetime.utcnow() > token_data['expires_at']:
+            # Clean up expired token
+            del password_reset_tokens[reset_token]
+            return jsonify({'error': 'Reset token has expired!'}), 400
+        
+        # Validate password strength
+        if len(new_password) < 8:
+            return jsonify({'error': 'Password must be at least 8 characters long!'}), 400
+        
+        # Find user
+        user = User.find_by_id(token_data['user_id'])
+        if not user:
+            # Clean up token
+            del password_reset_tokens[reset_token]
+            return jsonify({'error': 'User no longer exists!'}), 404
+        
+        if not user['is_active']:
+            # Clean up token
+            del password_reset_tokens[reset_token]
+            return jsonify({'error': 'Account is disabled!'}), 401
+        
+        # Update password
+        User.update_password(token_data['user_id'], new_password)
+        
+        # Clean up the used token
+        del password_reset_tokens[reset_token]
+        
+        current_app.logger.info(f"Password successfully reset for user: {user['username']}")
+        
+        return jsonify({
+            'message': 'Password has been reset successfully! You can now sign in with your new password.'
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Reset password error: {str(e)}")
+        return jsonify({'error': 'An error occurred while resetting password. Please try again.'}), 500
 
 
 # Health check endpoint for authentication service
