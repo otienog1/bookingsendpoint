@@ -9,22 +9,22 @@ def setup_mongodb():
         try:
             # Test MongoDB connection
             mongo.db.command('ping')
-            print("✅ MongoDB connection successful!")
+            print("MongoDB connection successful!")
             
             # Show database info
             db_stats = mongo.db.command('dbStats')
-            print(f"📊 Database: {db_stats['db']}")
-            print(f"📊 Collections: {db_stats['collections']}")
+            print(f"Database: {db_stats['db']}")
+            print(f"Collections: {db_stats['collections']}")
             
             # List existing collections
             collections = mongo.db.list_collection_names()
             if collections:
-                print(f"📂 Existing collections: {', '.join(collections)}")
+                print(f"Existing collections: {', '.join(collections)}")
             else:
-                print("📂 No collections found - ready for data migration")
+                print("No collections found - ready for data migration")
                 
         except Exception as e:
-            print(f"❌ MongoDB setup error: {e}")
+            print(f"MongoDB setup error: {e}")
             print("Make sure MongoDB is running and accessible.")
 
 
@@ -46,26 +46,26 @@ def create_admin_user():
                     last_name='User',
                     role='admin'
                 )
-                print("✅ Default admin user created!")
-                print("👤 Username: admin")
-                print("🔑 Password: admin123")
-                print("⚠️  IMPORTANT: Change this password after first login!")
+                print("Default admin user created!")
+                print("Username: admin")
+                print("Password: admin123")
+                print("IMPORTANT: Change this password after first login!")
             else:
-                print("ℹ️  Admin user already exists")
+                print("Admin user already exists")
                 
         except Exception as e:
-            print(f"❌ Could not create admin user: {e}")
+            print(f"Could not create admin user: {e}")
 
 
 if __name__ == '__main__':
     # Get configuration
     env = os.getenv('FLASK_ENV', 'development')
-    print(f"🚀 Starting application in {env} mode...")
+    print(f"Starting application in {env} mode...")
 
     # Show current configuration
-    print(f"🗄️  Database: {app.config.get('MONGO_URI', 'Not configured')[:50]}...")
-    print(f"⏱️  Access Token Duration: {app.config['ACCESS_TOKEN_DURATION']}")
-    print(f"💾 Remember Me Duration: {app.config['REMEMBER_ACCESS_TOKEN_DURATION']}")
+    print(f"Database: {app.config.get('MONGO_URI', 'Not configured')[:50]}...")
+    print(f"Access Token Duration: {app.config['ACCESS_TOKEN_DURATION']}")
+    print(f"Remember Me Duration: {app.config['REMEMBER_ACCESS_TOKEN_DURATION']}")
 
     # Setup MongoDB connection and create admin user if in development
     if env == 'development':
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     host = os.getenv('FLASK_RUN_HOST', '127.0.0.1')
     port = int(os.getenv('FLASK_RUN_PORT', 5000))
 
-    print(f"🌐 Starting server on http://{host}:{port}")
+    print(f"Starting server on http://{host}:{port}")
 
     # Run the application
     app.run(

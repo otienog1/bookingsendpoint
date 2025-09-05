@@ -51,6 +51,14 @@ class Config:
         "http://localhost:3000"
     ).split(",")
 
+    # Email Settings
+    SMTP_SERVER = os.getenv("SMTP_SERVER", "localhost")
+    SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
+    SMTP_USERNAME = os.getenv("SMTP_USERNAME")
+    SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+    FROM_EMAIL = os.getenv("FROM_EMAIL", "noreply@safaribuookings.com")
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+
 
 class DevelopmentConfig(Config):
     """Development configuration"""

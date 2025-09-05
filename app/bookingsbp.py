@@ -6,6 +6,7 @@ from .authbp import token_required
 import csv
 from datetime import datetime
 import traceback
+import jwt
 
 bookingsbp = Blueprint("bookingsbp", __name__)
 
@@ -103,6 +104,68 @@ def fetch_bookings(current_user):
         current_app.logger.error(error_msg)
         current_app.logger.error(traceback.format_exc())
         return jsonify({"error": "An error occurred while fetching bookings data"}), 500
+
+
+@bookingsbp.route("/booking/<booking_id>", methods=("GET", "OPTIONS"))
+def get_booking(booking_id):
+    # Handle CORS preflight request
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'OK'})
+        return response
+    
+    # For GET requests, apply token authentication
+    token = None
+    if 'Authorization' in request.headers:
+        auth_header = request.headers['Authorization']
+        if auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+
+    if not token:
+        return jsonify({'error': 'Token is missing!'}), 401
+
+    try:
+        # Decode token (simplified version of token_required logic)
+        
+        data = jwt.decode(token, current_app.config['SECRET_KEY'],
+                          algorithms=[current_app.config['JWT_ALGORITHM']])
+        current_user = User.find_by_id(data['user_id'])
+
+        if not current_user:
+            return jsonify({'error': 'User no longer exists!'}), 401
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired!'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token!'}), 401
+    except Exception as e:
+        return jsonify({'error': 'Authentication failed!'}), 401
+
+    # Main booking retrieval logic
+    try:
+        current_app.logger.info(f"Fetching booking with ID: {booking_id} for user: {current_user['username']}")
+        
+        # Validate ObjectId format
+        if not booking_id or len(booking_id) != 24:
+            current_app.logger.error(f"Invalid booking ID format: {booking_id}")
+            return jsonify({"error": "Invalid booking ID format"}), 400
+        
+        booking = Booking.find_by_id(booking_id)
+        current_app.logger.info(f"Database query result: {booking is not None}")
+        
+        if not booking:
+            current_app.logger.warning(f"Booking not found: {booking_id}")
+            return jsonify({"error": "Booking not found."}), 404
+        
+        current_app.logger.info(f"Converting booking to dict...")
+        booking_dict = Booking.to_dict(booking)
+        current_app.logger.info(f"Successfully converted booking: {booking_dict['id']}")
+        
+        return jsonify({"booking": booking_dict})
+    
+    except Exception as e:
+        current_app.logger.error(f"Error fetching booking {booking_id}: {str(e)}")
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
 
 @bookingsbp.route("/booking/create", methods=("POST",))
