@@ -49,12 +49,29 @@ def fetch_bookings(current_user):
             except ValueError as e:
                 current_app.logger.warning(f"Invalid date_to format: {date_to}. Error: {str(e)}")
 
-        # Non-admin users can only see their own bookings
+        # OLD LOGIC: Restrict non-admin users to their own bookings (TO BE REMOVED)
+        # This is the problematic logic that we want to override for dashboard access
         if current_user['role'] != 'admin':
-            mongo_query['user_id'] = current_user['_id']
+            mongo_query['user_id'] = ObjectId(current_user['_id'])
+            current_app.logger.info(f"Added user_id filter for non-admin user: {current_user['username']}")
+
+        # Allow all authenticated users to see all bookings for dashboard stats
+        # No user filtering - show all bookings to all authenticated users
+        current_app.logger.info(f"Current user role: {current_user.get('role', 'unknown')}")
+        current_app.logger.info(f"User: {current_user.get('username', 'unknown')}")
+        
+        # IMPORTANT: Explicitly ensure NO user filtering is applied
+        # This overrides any previous user filtering that might have been added
+        if 'user_id' in mongo_query:
+            del mongo_query['user_id']
+            current_app.logger.info("Removed user_id filter to show all bookings")
+        
+        current_app.logger.info("No user filtering applied - showing all bookings")
 
         # Log the MongoDB query for debugging
-        current_app.logger.debug(f"MongoDB Query: {mongo_query}")
+        current_app.logger.info(f"FINAL MongoDB Query: {mongo_query}")
+        current_app.logger.info(f"Query length: {len(mongo_query)}")
+        current_app.logger.info(f"Query keys: {list(mongo_query.keys())}")
 
         # Use aggregation pipeline to join with agents and users collections
         pipeline = [
@@ -85,6 +102,14 @@ def fetch_bookings(current_user):
         
         bookings = list(mongo.db.bookings.aggregate(pipeline))
         current_app.logger.info(f"Successfully fetched {len(bookings)} bookings with joins")
+        
+        # DEBUGGING: Log first few booking IDs to verify what's being returned
+        if bookings:
+            booking_ids = [str(booking['_id']) for booking in bookings[:3]]
+            current_app.logger.info(f"DEBUG: First 3 booking IDs: {booking_ids}")
+            current_app.logger.info(f"DEBUG: Sample booking user_ids: {[str(booking.get('user_id', 'NONE')) for booking in bookings[:3]]}")
+        else:
+            current_app.logger.warning("DEBUG: No bookings found - this might indicate a filtering issue")
 
         # Convert to dict format
         bookings_data = []
