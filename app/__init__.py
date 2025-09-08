@@ -34,22 +34,25 @@ def create_app():
         g.request_id = str(uuid.uuid4())[:8]
         app_.logger.debug(f"New request: {request.method} {request.path} - Request ID: {g.request_id}")
 
+    # Set up logging record factory once
+    old_factory = logging.getLogRecordFactory()
+    
+    def record_factory(*args, **kwargs):
+        record = old_factory(*args, **kwargs)
+        try:
+            record.request_id = getattr(g, 'request_id', 'no-request-id')
+        except RuntimeError:
+            # Outside of application context
+            record.request_id = 'no-request-id'
+        return record
+
+    logging.setLogRecordFactory(record_factory)
+
     # Add request ID to logger
     @app_.after_request
     def after_request(response):
         request_id = getattr(g, 'request_id', 'no-request-id')
         app_.logger.debug(f"Request {request_id} completed with status code {response.status_code}")
-
-        if hasattr(logging, 'LogRecord'):
-            old_factory = logging.getLogRecordFactory()
-
-            def record_factory(*args, **kwargs):
-                record = old_factory(*args, **kwargs)
-                record.request_id = request_id
-                return record
-
-            logging.setLogRecordFactory(record_factory)
-
         return response
 
     # Log unhandled exceptions
