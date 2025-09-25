@@ -442,9 +442,8 @@ def get_users(current_user):
     return jsonify({'users': [User.to_dict(user) for user in users]})
 
 
-@authbp.route('/auth/user/<user_id>', methods=['GET'])
-@token_required
-def get_user(current_user, user_id):
+def _get_user_logic(current_user, user_id):
+    """Shared logic for getting user by ID."""
     # Users can view their own profile, admins can view any profile
     if str(current_user['_id']) != user_id and current_user['role'] != 'admin':
         return jsonify({'error': 'Unauthorized access!'}), 403
@@ -454,6 +453,20 @@ def get_user(current_user, user_id):
         return jsonify({'error': 'User not found!'}), 404
 
     return jsonify({'user': User.to_dict(user)})
+
+
+@authbp.route('/auth/user/<user_id>', methods=['GET'])
+@token_required
+def get_user(current_user, user_id):
+    """Original user fetch endpoint."""
+    return _get_user_logic(current_user, user_id)
+
+
+@authbp.route('/api/auth/user/<user_id>', methods=['GET'])
+@token_required
+def api_get_user(current_user, user_id):
+    """API endpoint alias for getting user by ID."""
+    return _get_user_logic(current_user, user_id)
 
 
 @authbp.route('/auth/user/<user_id>', methods=['PUT'])

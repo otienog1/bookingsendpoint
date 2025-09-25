@@ -11,6 +11,12 @@ agentsbp = Blueprint("agentsbp", __name__)
 @agentsbp.route("/agent/fetch", methods=("GET",))
 @token_required
 def fetch_agents(current_user):
+    """Original agent fetch endpoint."""
+    return _fetch_agents_logic(current_user)
+
+
+def _fetch_agents_logic(current_user):
+    """Shared logic for fetching agents."""
     # Fetch all agents or only active ones
     show_inactive = request.args.get('show_inactive', 'false').lower() == 'true'
 
@@ -20,6 +26,13 @@ def fetch_agents(current_user):
         agents = Agent.get_active()
 
     return jsonify({"agents": [Agent.to_dict(agent) for agent in agents]})
+
+
+@agentsbp.route("/api/agent/fetch", methods=("GET",))
+@token_required
+def api_fetch_agents(current_user):
+    """API endpoint alias for agent fetch."""
+    return _fetch_agents_logic(current_user)
 
 
 @agentsbp.route("/agent/<agent_id>", methods=("GET",))

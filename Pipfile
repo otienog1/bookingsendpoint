@@ -15,8 +15,15 @@ python-json-logger = "*"
 psycopg2-binary = "*"
 pymongo = {extras = ["srv"], version = "==3.12"}
 flask-pymongo = "*"
+cryptography = "*"
+boto3 = "*"
+copyparty = "*"
+marshmallow = "*"
 
 [dev-packages]
+pytest = "*"
+pytest-flask = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.13"

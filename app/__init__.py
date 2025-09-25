@@ -72,6 +72,9 @@ def create_app():
     from .agentsbp import agentsbp as agents_blueprint
     app_.register_blueprint(agents_blueprint)
 
+    from .documentsbp import documentsbp as documents_blueprint
+    app_.register_blueprint(documents_blueprint)
+
     # Log successful initialization with config info
     app_.logger.info(f"Application initialized successfully in {app_.config.get('ENV', 'development')} mode")
     app_.logger.info(

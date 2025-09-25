@@ -1,19 +1,84 @@
-# test_auth_refresh.py
-# Run this file to test your token refresh implementation
+def test_sequential_token_refreshes():
+    """Test multiple sequential token refreshes"""
+    print("\n8. Testing sequential token refreshes...")
+    
+    # Initial login
+    login_data = test_login_without_remember_me()
+    if not login_data:
+        return False
+        
+    refresh_token = login_data['refresh_token']
+    success_count = 0
+    
+    # Try 3 sequential refreshes
+    for i in range(3):
+        print_info(f"Attempting refresh #{i+1}")
+        new_token = test_refresh_token(refresh_token)
+        if new_token:
+            success_count += 1
+            # Verify the new token works
+            if test_api_call_with_token(new_token):
+                print_success(f"Refresh #{i+1} token verified working")
+            else:
+                print_error(f"Refresh #{i+1} token failed verification")
+                return False
+    
+    if success_count == 3:
+        print_success("All sequential refreshes successful")
+        return True
+    else:
+        print_error("Sequential refresh chain broken")
+        return False
 
-import requests
-# import time
-# import json
-# from datetime import datetime
+def test_concurrent_token_use():
+    """Test using same token from multiple requests"""
+    print("\n9. Testing concurrent token usage...")
+    
+    # Get initial token
+    login_data = test_login_without_remember_me()
+    if not login_data:
+        return False
+        
+    token = login_data['token']
+    
+    # Make multiple concurrent requests
+    responses = []
+    for i in range(3):
+        response = requests.get(f"{BASE_URL}/booking/fetch",
+                              headers={"Authorization": f"Bearer {token}"})
+        responses.append(response.status_code == 200)
+        
+    if all(responses):
+        print_success("Concurrent token usage successful")
+        return True
+    else:
+        print_error("Concurrent token usage failed")
+        return False
 
-# Configuration
-BASE_URL = "https://bookingsendpoint.onrender.com"  # Change to localhost:5000 for local testing
-TEST_USERNAME = "test_user"  # Create this user first
-TEST_PASSWORD = "test_password"
-
-
-class Colors:
-    GREEN = '\033[92m'
+def test_expired_token_refresh():
+    """Test refreshing an expired token"""
+    print("\n10. Testing expired token refresh...")
+    
+    login_data = test_login_with_remember_me()
+    if not login_data:
+        return False
+        
+    # First verify token is invalid
+    response = requests.get(f"{BASE_URL}/auth/verify",
+                          headers={"Authorization": f"Bearer {login_data['token']}"})
+    
+    if response.status_code != 401:
+        print_warning("Token not expired, skipping test")
+        return None
+        
+    # Try refreshing with valid refresh token
+    new_token = test_refresh_token(login_data['refresh_token'])
+    if new_token:
+        print_success("Successfully refreshed expired token")
+        return True
+    else:
+        print_error("Failed to refresh expired token")
+        return False
     RED = '\033[91m'
     YELLOW = '\033[93m'
     BLUE = '\033[94m'
