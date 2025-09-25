@@ -29,6 +29,9 @@ class Booking(db.Model, TimestampMixin):
 
     # Foreign key reference to the user who created the booking
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    
+    # Notes field for additional information
+    notes = db.Column(db.Text, nullable=True)
 
     # Define relationship to User model
     user = db.relationship('User', backref=db.backref('bookings', lazy=True))
@@ -71,7 +74,8 @@ class Booking(db.Model, TimestampMixin):
                 "agent_country": agent_country,
                 "consultant": self.consultant,
                 "user_id": self.user_id,
-                "created_by": created_by
+                "created_by": created_by,
+                "notes": self.notes
             }
         except Exception as e:
             if current_app:

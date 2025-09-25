@@ -216,13 +216,13 @@ class Booking(BaseModel):
     
     @classmethod
     def create_booking(cls, name, date_from, date_to, country, user_id, agent_id,
-                      pax=0, ladies=0, men=0, children=0, teens=0, consultant=None):
+                      pax=0, ladies=0, men=0, children=0, teens=0, consultant=None, notes=None):
         """Create a new booking"""
         if isinstance(user_id, str):
             user_id = ObjectId(user_id)
         if isinstance(agent_id, str):
             agent_id = ObjectId(agent_id)
-            
+
         booking_data = {
             "name": name,
             "date_from": date_from,
@@ -235,10 +235,61 @@ class Booking(BaseModel):
             "teens": teens,
             "agent_id": agent_id,
             "consultant": consultant,
-            "user_id": user_id
+            "user_id": user_id,
+            "notes": notes,
+            "is_deleted": False,
+            "deleted_at": None
         }
         booking_id = cls.insert_one(booking_data)
         return cls.find_by_id(booking_id)
+
+    @classmethod
+    def get_active(cls):
+        """Get only active (non-deleted) bookings"""
+        return cls.find_many({"$or": [{"is_deleted": {"$exists": False}}, {"is_deleted": False}]})
+
+    @classmethod
+    def get_trashed(cls):
+        """Get only trashed bookings"""
+        return cls.find_many({"is_deleted": True})
+
+    @classmethod
+    def move_to_trash(cls, booking_id, user_id):
+        """Move a booking to trash (soft delete)"""
+        if isinstance(booking_id, str):
+            booking_id = ObjectId(booking_id)
+        if isinstance(user_id, str):
+            user_id = ObjectId(user_id)
+
+        return cls.update_one(
+            {"_id": booking_id},
+            {"$set": {
+                "is_deleted": True,
+                "deleted_at": datetime.now(timezone.utc),
+                "deleted_by": user_id
+            }}
+        )
+
+    @classmethod
+    def restore_from_trash(cls, booking_id):
+        """Restore a booking from trash"""
+        if isinstance(booking_id, str):
+            booking_id = ObjectId(booking_id)
+
+        return cls.update_one(
+            {"_id": booking_id},
+            {"$set": {
+                "is_deleted": False,
+                "deleted_at": None
+            }, "$unset": {
+                "deleted_by": ""
+            }}
+        )
+
+    @classmethod
+    def empty_trash(cls):
+        """Permanently delete all trashed bookings"""
+        return cls.get_collection().delete_many({"is_deleted": True})
     
     @staticmethod
     def to_dict(booking_doc, agent_doc=None, user_doc=None):
@@ -260,6 +311,9 @@ class Booking(BaseModel):
                 "agent_id": str(booking_doc["agent_id"]),
                 "consultant": booking_doc.get("consultant"),
                 "user_id": str(booking_doc["user_id"]),
+                "notes": booking_doc.get("notes"),
+                "is_deleted": booking_doc.get("is_deleted", False),
+                "deleted_at": booking_doc.get("deleted_at"),
                 "created_at": booking_doc["created_at"],
                 "updated_at": booking_doc["updated_at"]
             }

@@ -7,13 +7,60 @@ import csv
 from datetime import datetime
 import traceback
 import jwt
+import os
+import secrets
+import time
 
 bookingsbp = Blueprint("bookingsbp", __name__)
+
+
+def generate_share_token_for_booking(booking_id, user_id, categories=['Voucher', 'Air Ticket'], expires_in_seconds=604800):
+    """Generate a share token for a newly created booking."""
+    try:
+        # Generate a short random token ID
+        token_id = secrets.token_urlsafe(16)
+        expires_at_timestamp = int(time.time()) + expires_in_seconds
+        expires_at_datetime = datetime.fromtimestamp(expires_at_timestamp)
+
+        # Create share URL
+        frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:3000').rstrip('/')
+        share_url = f"{frontend_url}/share/{token_id}"
+
+        # Store share token in database
+        share_record = {
+            "booking_id": ObjectId(booking_id),
+            "token": token_id,
+            "categories": categories,
+            "expires_at": expires_at_datetime,
+            "created_at": datetime.utcnow(),
+            "created_by": ObjectId(user_id),
+            "used_count": 0
+        }
+
+        mongo.db.share_tokens.insert_one(share_record)
+
+        current_app.logger.info(f"Auto-generated share token for booking {booking_id}: {token_id}")
+
+        return {
+            "token": token_id,
+            "shareUrl": share_url,
+            "expiresAt": expires_at_datetime.isoformat(),
+            "categories": categories
+        }
+    except Exception as e:
+        current_app.logger.error(f"Error auto-generating share token for booking {booking_id}: {str(e)}")
+        return None
 
 
 @bookingsbp.route("/booking/fetch", methods=("GET",))
 @token_required
 def fetch_bookings(current_user):
+    """Original booking fetch endpoint."""
+    return _fetch_bookings_logic(current_user)
+
+
+def _fetch_bookings_logic(current_user):
+    """Shared logic for fetching bookings."""
     try:
         current_app.logger.info(f"User {current_user['username']} requesting bookings data")
 
@@ -28,6 +75,12 @@ def fetch_bookings(current_user):
 
         # Build MongoDB query
         mongo_query = {}
+
+        # Exclude deleted/trashed bookings by default
+        mongo_query['$or'] = [
+            {"is_deleted": {"$exists": False}},
+            {"is_deleted": False}
+        ]
 
         # Apply filters if provided
         if agent_id:
@@ -49,29 +102,19 @@ def fetch_bookings(current_user):
             except ValueError as e:
                 current_app.logger.warning(f"Invalid date_to format: {date_to}. Error: {str(e)}")
 
-        # OLD LOGIC: Restrict non-admin users to their own bookings (TO BE REMOVED)
-        # This is the problematic logic that we want to override for dashboard access
-        if current_user['role'] != 'admin':
-            mongo_query['user_id'] = ObjectId(current_user['_id'])
-            current_app.logger.info(f"Added user_id filter for non-admin user: {current_user['username']}")
-
         # Allow all authenticated users to see all bookings for dashboard stats
-        # No user filtering - show all bookings to all authenticated users
         current_app.logger.info(f"Current user role: {current_user.get('role', 'unknown')}")
         current_app.logger.info(f"User: {current_user.get('username', 'unknown')}")
-        
+
         # IMPORTANT: Explicitly ensure NO user filtering is applied
-        # This overrides any previous user filtering that might have been added
         if 'user_id' in mongo_query:
             del mongo_query['user_id']
             current_app.logger.info("Removed user_id filter to show all bookings")
-        
+
         current_app.logger.info("No user filtering applied - showing all bookings")
 
         # Log the MongoDB query for debugging
         current_app.logger.info(f"FINAL MongoDB Query: {mongo_query}")
-        current_app.logger.info(f"Query length: {len(mongo_query)}")
-        current_app.logger.info(f"Query keys: {list(mongo_query.keys())}")
 
         # Use aggregation pipeline to join with agents and users collections
         pipeline = [
@@ -79,7 +122,7 @@ def fetch_bookings(current_user):
             {
                 "$lookup": {
                     "from": "agents",
-                    "localField": "agent_id", 
+                    "localField": "agent_id",
                     "foreignField": "_id",
                     "as": "agent"
                 }
@@ -88,7 +131,7 @@ def fetch_bookings(current_user):
                 "$lookup": {
                     "from": "users",
                     "localField": "user_id",
-                    "foreignField": "_id", 
+                    "foreignField": "_id",
                     "as": "user"
                 }
             },
@@ -99,17 +142,9 @@ def fetch_bookings(current_user):
                 }
             }
         ]
-        
+
         bookings = list(mongo.db.bookings.aggregate(pipeline))
         current_app.logger.info(f"Successfully fetched {len(bookings)} bookings with joins")
-        
-        # DEBUGGING: Log first few booking IDs to verify what's being returned
-        if bookings:
-            booking_ids = [str(booking['_id']) for booking in bookings[:3]]
-            current_app.logger.info(f"DEBUG: First 3 booking IDs: {booking_ids}")
-            current_app.logger.info(f"DEBUG: Sample booking user_ids: {[str(booking.get('user_id', 'NONE')) for booking in bookings[:3]]}")
-        else:
-            current_app.logger.warning("DEBUG: No bookings found - this might indicate a filtering issue")
 
         # Convert to dict format
         bookings_data = []
@@ -119,8 +154,6 @@ def fetch_bookings(current_user):
                 bookings_data.append(booking_dict)
             except Exception as e:
                 current_app.logger.error(f"Error converting booking {booking['_id']} to dict: {str(e)}")
-                current_app.logger.error(traceback.format_exc())
-                # Continue with other bookings even if one fails
 
         return jsonify({"bookings": bookings_data})
 
@@ -129,6 +162,13 @@ def fetch_bookings(current_user):
         current_app.logger.error(error_msg)
         current_app.logger.error(traceback.format_exc())
         return jsonify({"error": "An error occurred while fetching bookings data"}), 500
+
+
+@bookingsbp.route("/api/booking/fetch", methods=("GET",))
+@token_required
+def api_fetch_bookings(current_user):
+    """API endpoint alias for booking fetch."""
+    return _fetch_bookings_logic(current_user)
 
 
 @bookingsbp.route("/booking/<booking_id>", methods=("GET", "OPTIONS"))
@@ -169,9 +209,16 @@ def get_booking(booking_id):
     try:
         current_app.logger.info(f"Fetching booking with ID: {booking_id} for user: {current_user['username']}")
         
-        # Validate ObjectId format
+        # Validate ObjectId format - must be 24 hex characters
         if not booking_id or len(booking_id) != 24:
-            current_app.logger.error(f"Invalid booking ID format: {booking_id}")
+            current_app.logger.error(f"Invalid booking ID format: {booking_id} (length: {len(booking_id) if booking_id else 0})")
+            return jsonify({"error": "Invalid booking ID format"}), 400
+
+        # Validate if it's a valid hex string for ObjectId
+        try:
+            ObjectId(booking_id)
+        except Exception as e:
+            current_app.logger.error(f"Invalid ObjectId format: {booking_id}, error: {str(e)}")
             return jsonify({"error": "Invalid booking ID format"}), 400
         
         booking = Booking.find_by_id(booking_id)
@@ -182,7 +229,18 @@ def get_booking(booking_id):
             return jsonify({"error": "Booking not found."}), 404
         
         current_app.logger.info(f"Converting booking to dict...")
-        booking_dict = Booking.to_dict(booking)
+        
+        # Fetch related agent and user information
+        agent_doc = None
+        user_doc = None
+        
+        if booking.get('agent_id'):
+            agent_doc = Agent.find_by_id(booking['agent_id'])
+            
+        if booking.get('user_id'):
+            user_doc = User.find_by_id(booking['user_id'])
+        
+        booking_dict = Booking.to_dict(booking, agent_doc, user_doc)
         current_app.logger.info(f"Successfully converted booking: {booking_dict['id']}")
         
         return jsonify({"booking": booking_dict})
@@ -191,6 +249,12 @@ def get_booking(booking_id):
         current_app.logger.error(f"Error fetching booking {booking_id}: {str(e)}")
         current_app.logger.error(traceback.format_exc())
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+
+@bookingsbp.route("/api/booking/<booking_id>", methods=("GET", "OPTIONS"))
+def api_get_booking(booking_id):
+    """API endpoint alias for getting booking by ID."""
+    return get_booking(booking_id)
 
 
 @bookingsbp.route("/booking/create", methods=("POST",))
@@ -229,10 +293,19 @@ def create_booking(current_user):
             men=int(data["men"]) if data["men"] else 0,
             children=int(data["children"]) if data["children"] else 0,
             teens=int(data["teens"]) if data["teens"] else 0,
-            consultant=data.get("consultant")
+            consultant=data.get("consultant"),
+            notes=data.get("notes")
         )
 
         current_app.logger.info(f"Booking created successfully with ID {booking['_id']}")
+
+        # Auto-generate share link for the new booking
+        share_info = generate_share_token_for_booking(
+            booking_id=str(booking['_id']),
+            user_id=str(current_user['_id']),
+            categories=['Voucher', 'Air Ticket', 'Invoice', 'Other'],  # Include all categories
+            expires_in_seconds=604800  # 7 days
+        )
 
     except KeyError as e:
         error_msg = f"Missing required field: {str(e)}"
@@ -262,6 +335,18 @@ def edit_booking(current_user, booking_id):
     current_app.logger.debug(f"Edit booking data: {data}")
 
     try:
+        # Validate ObjectId format - must be 24 hex characters
+        if not booking_id or len(booking_id) != 24:
+            current_app.logger.error(f"Invalid booking ID format for edit: {booking_id} (length: {len(booking_id) if booking_id else 0})")
+            return jsonify({"error": "Invalid booking ID format"}), 400
+
+        # Validate if it's a valid hex string for ObjectId
+        try:
+            ObjectId(booking_id)
+        except Exception as e:
+            current_app.logger.error(f"Invalid ObjectId format for edit: {booking_id}, error: {str(e)}")
+            return jsonify({"error": "Invalid booking ID format"}), 400
+
         booking = Booking.find_by_id(booking_id)
 
         if not booking:
@@ -305,6 +390,8 @@ def edit_booking(current_user, booking_id):
             update_data["teens"] = int(data["teens"])
         if "consultant" in data:
             update_data["consultant"] = data["consultant"]
+        if "notes" in data:
+            update_data["notes"] = data["notes"]
 
         # Only admins can change the user_id
         if data.get("user_id") and current_user['role'] == 'admin':
@@ -389,7 +476,8 @@ def import_bookings(current_user):
                     men=int(row["men"]) if row["men"] else 0,
                     children=int(row["children"]) if row["children"] else 0,
                     teens=int(row["teens"]) if row["teens"] else 0,
-                    consultant=row.get("consultant")
+                    consultant=row.get("consultant"),
+                    notes=row.get("notes")
                 )
 
                 imported_count += 1
@@ -426,6 +514,18 @@ def delete_booking(current_user, booking_id):
     current_app.logger.info(f"User {current_user['username']} attempting to delete booking {booking_id}")
 
     try:
+        # Validate ObjectId format - must be 24 hex characters
+        if not booking_id or len(booking_id) != 24:
+            current_app.logger.error(f"Invalid booking ID format for delete: {booking_id} (length: {len(booking_id) if booking_id else 0})")
+            return jsonify({"error": "Invalid booking ID format"}), 400
+
+        # Validate if it's a valid hex string for ObjectId
+        try:
+            ObjectId(booking_id)
+        except Exception as e:
+            current_app.logger.error(f"Invalid ObjectId format for delete: {booking_id}, error: {str(e)}")
+            return jsonify({"error": "Invalid booking ID format"}), 400
+
         booking = Booking.find_by_id(booking_id)
         if not booking:
             current_app.logger.warning(f"Booking with ID {booking_id} not found")
@@ -447,3 +547,188 @@ def delete_booking(current_user, booking_id):
         return jsonify({"error": error_msg}), 400
 
     return jsonify({"message": "Booking deleted successfully."})
+
+
+@bookingsbp.route("/booking/trash/<booking_id>", methods=("PUT",))
+@token_required
+def move_booking_to_trash(current_user, booking_id):
+    """Move a booking to trash (soft delete)"""
+    current_app.logger.info(f"User {current_user['username']} attempting to move booking {booking_id} to trash")
+
+    try:
+        # Validate ObjectId format - must be 24 hex characters
+        if not booking_id or len(booking_id) != 24:
+            current_app.logger.error(f"Invalid booking ID format for trash: {booking_id} (length: {len(booking_id) if booking_id else 0})")
+            return jsonify({"error": "Invalid booking ID format"}), 400
+
+        # Validate if it's a valid hex string for ObjectId
+        try:
+            ObjectId(booking_id)
+        except Exception as e:
+            current_app.logger.error(f"Invalid ObjectId format for trash: {booking_id}, error: {str(e)}")
+            return jsonify({"error": "Invalid booking ID format"}), 400
+
+        booking = Booking.find_by_id(booking_id)
+        if not booking:
+            current_app.logger.warning(f"Booking with ID {booking_id} not found")
+            return jsonify({"error": "Booking not found."}), 404
+
+        # Check if the user has permission to delete this booking
+        if str(booking['user_id']) != str(current_user['_id']) and current_user['role'] != 'admin':
+            current_app.logger.warning(
+                f"Unauthorized attempt to trash booking {booking_id} by {current_user['username']}")
+            return jsonify({"error": "Unauthorized access!"}), 403
+
+        # Check if already deleted
+        if booking.get('is_deleted', False):
+            current_app.logger.warning(f"Booking {booking_id} is already in trash")
+            return jsonify({"error": "Booking is already in trash."}), 400
+
+        result = Booking.move_to_trash(booking_id, current_user['_id'])
+        if result.modified_count > 0:
+            current_app.logger.info(f"Booking {booking_id} moved to trash successfully")
+        else:
+            current_app.logger.warning(f"Failed to move booking {booking_id} to trash")
+            return jsonify({"error": "Failed to move booking to trash."}), 500
+
+    except Exception as e:
+        error_msg = f"Error moving booking to trash: {str(e)}"
+        current_app.logger.error(error_msg)
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({"error": error_msg}), 500
+
+    return jsonify({"message": "Booking moved to trash successfully."})
+
+
+@bookingsbp.route("/booking/restore/<booking_id>", methods=("PUT",))
+@token_required
+def restore_booking(current_user, booking_id):
+    """Restore a booking from trash"""
+    current_app.logger.info(f"User {current_user['username']} attempting to restore booking {booking_id}")
+
+    try:
+        # Validate ObjectId format - must be 24 hex characters
+        if not booking_id or len(booking_id) != 24:
+            current_app.logger.error(f"Invalid booking ID format for restore: {booking_id} (length: {len(booking_id) if booking_id else 0})")
+            return jsonify({"error": "Invalid booking ID format"}), 400
+
+        # Validate if it's a valid hex string for ObjectId
+        try:
+            ObjectId(booking_id)
+        except Exception as e:
+            current_app.logger.error(f"Invalid ObjectId format for restore: {booking_id}, error: {str(e)}")
+            return jsonify({"error": "Invalid booking ID format"}), 400
+
+        booking = Booking.find_by_id(booking_id)
+        if not booking:
+            current_app.logger.warning(f"Booking with ID {booking_id} not found")
+            return jsonify({"error": "Booking not found."}), 404
+
+        # Check if the user has permission to restore this booking
+        if str(booking['user_id']) != str(current_user['_id']) and current_user['role'] != 'admin':
+            current_app.logger.warning(
+                f"Unauthorized attempt to restore booking {booking_id} by {current_user['username']}")
+            return jsonify({"error": "Unauthorized access!"}), 403
+
+        # Check if it's actually deleted
+        if not booking.get('is_deleted', False):
+            current_app.logger.warning(f"Booking {booking_id} is not in trash")
+            return jsonify({"error": "Booking is not in trash."}), 400
+
+        result = Booking.restore_from_trash(booking_id)
+        if result.modified_count > 0:
+            current_app.logger.info(f"Booking {booking_id} restored successfully")
+        else:
+            current_app.logger.warning(f"Failed to restore booking {booking_id}")
+            return jsonify({"error": "Failed to restore booking."}), 500
+
+    except Exception as e:
+        error_msg = f"Error restoring booking: {str(e)}"
+        current_app.logger.error(error_msg)
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({"error": error_msg}), 500
+
+    return jsonify({"message": "Booking restored successfully."})
+
+
+@bookingsbp.route("/booking/trash", methods=("GET",))
+@token_required
+def fetch_trashed_bookings(current_user):
+    """Fetch all trashed bookings"""
+    current_app.logger.info(f"User {current_user['username']} requesting trashed bookings")
+
+    try:
+        # Use aggregation pipeline to join with agents and users collections for trashed bookings
+        pipeline = [
+            {"$match": {"is_deleted": True}},
+            {
+                "$lookup": {
+                    "from": "agents",
+                    "localField": "agent_id",
+                    "foreignField": "_id",
+                    "as": "agent"
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "user_id",
+                    "foreignField": "_id",
+                    "as": "user"
+                }
+            },
+            {
+                "$addFields": {
+                    "agent": {"$arrayElemAt": ["$agent", 0]},
+                    "user": {"$arrayElemAt": ["$user", 0]}
+                }
+            }
+        ]
+
+        bookings = list(mongo.db.bookings.aggregate(pipeline))
+        current_app.logger.info(f"Successfully fetched {len(bookings)} trashed bookings")
+
+        # Convert to dict format
+        bookings_data = []
+        for booking in bookings:
+            try:
+                booking_dict = Booking.to_dict(booking, booking.get('agent'), booking.get('user'))
+                bookings_data.append(booking_dict)
+            except Exception as e:
+                current_app.logger.error(f"Error converting trashed booking {booking['_id']} to dict: {str(e)}")
+
+        return jsonify({"bookings": bookings_data})
+
+    except Exception as e:
+        error_msg = f"Error fetching trashed bookings: {str(e)}"
+        current_app.logger.error(error_msg)
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({"error": "An error occurred while fetching trashed bookings"}), 500
+
+
+@bookingsbp.route("/booking/empty-trash", methods=("DELETE",))
+@token_required
+def empty_trash(current_user):
+    """Permanently delete all trashed bookings"""
+    current_app.logger.info(f"User {current_user['username']} attempting to empty trash")
+
+    # Only admins can empty trash
+    if current_user['role'] != 'admin':
+        current_app.logger.warning(f"Unauthorized attempt to empty trash by {current_user['username']}")
+        return jsonify({"error": "Unauthorized access! Only admins can empty trash."}), 403
+
+    try:
+        result = Booking.empty_trash()
+        deleted_count = result.deleted_count
+        current_app.logger.info(f"Successfully deleted {deleted_count} bookings from trash")
+
+        return jsonify({
+            "message": f"Trash emptied successfully. {deleted_count} bookings permanently deleted.",
+            "deleted_count": deleted_count
+        })
+
+    except Exception as e:
+        error_msg = f"Error emptying trash: {str(e)}"
+        current_app.logger.error(error_msg)
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({"error": error_msg}), 500

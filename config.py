@@ -56,8 +56,16 @@ class Config:
     SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
     SMTP_USERNAME = os.getenv("SMTP_USERNAME")
     SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-    FROM_EMAIL = os.getenv("FROM_EMAIL", "noreply@safaribuookings.com")
+    FROM_EMAIL = os.getenv("FROM_EMAIL", "noreply@safaribookings.com")
     FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+
+    # Document Management & Copyparty Settings
+    COPYPARTY_BASE_URL = os.getenv("COPYPARTY_BASE_URL", "http://localhost:3923")
+    COPYPARTY_API_TOKEN = os.getenv("COPYPARTY_API_TOKEN")
+    COPYPARTY_UPLOAD_PASSWORD = os.getenv("COPYPARTY_UPLOAD_PASSWORD")
+    COPYPARTY_FOLDER_PREFIX = os.getenv("COPYPARTY_FOLDER_PREFIX", "bookings")
+    SHARE_TOKEN_SECRET = os.getenv("SHARE_TOKEN_SECRET", "change-me-in-production")
+    SHARE_EXPIRES_DEFAULT = int(os.getenv("SHARE_EXPIRES_DEFAULT", 604800))  # 7 days
 
 
 class DevelopmentConfig(Config):
