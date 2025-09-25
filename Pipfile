@@ -19,6 +19,7 @@ cryptography = "*"
 boto3 = "*"
 copyparty = "*"
 marshmallow = "*"
+pipenv-to-requirements = "*"
 
 [dev-packages]
 pytest = "*"
