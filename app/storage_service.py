@@ -56,27 +56,43 @@ class StorageService:
     def _init_gcs_client(self):
         """Initialize Google Cloud Storage client."""
         try:
+            if hasattr(current_app, 'logger'):
+                logger = current_app.logger
+            else:
+                # Fallback logger if Flask app not available
+                import logging
+                logger = logging.getLogger(__name__)
+
             if self.gcs_config['credentials_json']:
+                logger.info("Initializing GCS client with JSON credentials from environment")
                 # Use JSON credentials from environment variable
                 credentials_info = json.loads(self.gcs_config['credentials_json'])
                 self.gcs_client = storage.Client.from_service_account_info(
                     credentials_info,
                     project=self.gcs_config['project_id']
                 )
+                logger.info("GCS client initialized successfully with JSON credentials")
             elif self.gcs_config['credentials_path']:
+                logger.info(f"Initializing GCS client with credentials file: {self.gcs_config['credentials_path']}")
                 # Use credentials file path
                 self.gcs_client = storage.Client.from_service_account_json(
                     self.gcs_config['credentials_path'],
                     project=self.gcs_config['project_id']
                 )
+                logger.info("GCS client initialized successfully with credentials file")
             elif self.gcs_config['project_id']:
+                logger.info("Initializing GCS client with default credentials")
                 # Use default credentials (for Google Cloud environments)
                 self.gcs_client = storage.Client(project=self.gcs_config['project_id'])
+                logger.info("GCS client initialized successfully with default credentials")
             else:
-                current_app.logger.warning("No GCS credentials configured. GCS fallback disabled.")
+                logger.warning("No GCS credentials configured. GCS fallback disabled.")
                 self.gcs_client = None
         except Exception as e:
-            current_app.logger.error(f"Failed to initialize GCS client: {e}")
+            if hasattr(current_app, 'logger'):
+                current_app.logger.error(f"Failed to initialize GCS client: {e}")
+            else:
+                print(f"Failed to initialize GCS client: {e}")
             self.gcs_client = None
 
     def _test_copyparty_connection(self) -> bool:
@@ -174,29 +190,41 @@ class StorageService:
         Upload file with fallback support.
         Tries Copyparty first, falls back to GCS if Copyparty fails.
         """
-        current_app.logger.info(f"Attempting to upload file: {original_filename}")
+        # Get logger
+        if hasattr(current_app, 'logger'):
+            logger = current_app.logger
+        else:
+            import logging
+            logger = logging.getLogger(__name__)
+
+        logger.info(f"Attempting to upload file: {original_filename}")
+        logger.info(f"GCS client available: {self.gcs_client is not None}")
 
         # Try Copyparty first
         if self._test_copyparty_connection():
             try:
                 result = self._upload_to_copyparty(file, booking_id, category, original_filename)
-                current_app.logger.info(f"File uploaded to Copyparty: {original_filename}")
+                logger.info(f"File uploaded to Copyparty: {original_filename}")
                 return result
             except Exception as e:
-                current_app.logger.warning(f"Copyparty upload failed: {e}")
+                logger.warning(f"Copyparty upload failed: {e}")
         else:
-            current_app.logger.warning("Copyparty is not accessible")
+            logger.warning("Copyparty is not accessible")
 
         # Fallback to GCS
         if self.gcs_client:
             try:
+                logger.info("Attempting GCS upload...")
                 result = self._upload_to_gcs(file, booking_id, category, original_filename)
-                current_app.logger.info(f"File uploaded to GCS: {original_filename}")
+                logger.info(f"File uploaded to GCS: {original_filename}")
                 return result
             except Exception as e:
-                current_app.logger.error(f"GCS upload failed: {e}")
+                logger.error(f"GCS upload failed: {e}")
+                import traceback
+                logger.error(f"GCS upload traceback: {traceback.format_exc()}")
                 raise Exception(f"Both Copyparty and GCS upload failed. Last error: {e}")
         else:
+            logger.error("No storage backend available. Copyparty failed and GCS not configured.")
             raise Exception("No storage backend available. Copyparty failed and GCS not configured.")
 
     def download_file(self, file_url: str, storage_type: str = None) -> Tuple[bytes, str]:

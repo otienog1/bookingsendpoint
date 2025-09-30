@@ -75,6 +75,9 @@ def create_app():
     from .documentsbp import documentsbp as documents_blueprint
     app_.register_blueprint(documents_blueprint)
 
+    from .healthbp import healthbp as health_blueprint
+    app_.register_blueprint(health_blueprint)
+
     # Log successful initialization with config info
     app_.logger.info(f"Application initialized successfully in {app_.config.get('ENV', 'development')} mode")
     app_.logger.info(
