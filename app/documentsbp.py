@@ -3,6 +3,7 @@ from .mongodb_models import Booking, User
 from . import mongo
 from bson import ObjectId
 from .authbp import token_required
+from .storage_service import storage_service
 import os
 import hashlib
 import hmac
@@ -222,8 +223,8 @@ def upload_document(current_user, booking_id):
         if category not in ['Voucher', 'Air Ticket', 'Invoice', 'Other']:
             category = 'Other'
 
-        # Upload to Copyparty
-        upload_result = upload_to_copyparty(file, booking_id, category, file.filename)
+        # Upload using storage service (Copyparty with GCS fallback)
+        upload_result = storage_service.upload_file(file, booking_id, category, file.filename)
 
         # Save document metadata to database
         document = {
@@ -235,6 +236,7 @@ def upload_document(current_user, booking_id):
             "mime_type": file.content_type,
             "url": upload_result['url'],
             "path": upload_result['path'],
+            "storage_type": upload_result['storage_type'],
             "uploaded_at": datetime.utcnow(),
             "uploaded_by": ObjectId(current_user['_id'])
         }
@@ -554,17 +556,17 @@ def download_shared_document(token, documentId):
 
         current_app.logger.info(f"Found document: {document['filename']}, URL: {document['url']}")
 
-        # Download file from Copyparty and stream it
+        # Download file using storage service
         try:
-            file_response = requests.get(document['url'], timeout=30, stream=True)
-            file_response.raise_for_status()
+            file_content, content_type = storage_service.download_file(
+                document['url'],
+                document.get('storage_type', 'copyparty')
+            )
 
-            current_app.logger.info(f"Successfully fetched file from Copyparty, content-length: {file_response.headers.get('content-length')}")
+            current_app.logger.info(f"Successfully fetched file, size: {len(file_content)} bytes")
 
-            # Determine content type
-            content_type = file_response.headers.get('content-type', 'application/octet-stream')
+            # Fallback content type detection if needed
             if not content_type or content_type == 'application/octet-stream':
-                # Try to guess from filename
                 filename = document['filename'].lower()
                 if filename.endswith('.pdf'):
                     content_type = 'application/pdf'
@@ -578,17 +580,12 @@ def download_shared_document(token, documentId):
             # Create response with file content
             from flask import Response
 
-            def generate():
-                for chunk in file_response.iter_content(chunk_size=8192):
-                    if chunk:
-                        yield chunk
-
             response = Response(
-                generate(),
+                file_content,
                 content_type=content_type,
                 headers={
                     'Content-Disposition': f'attachment; filename="{document["filename"]}"',
-                    'Content-Length': file_response.headers.get('content-length', ''),
+                    'Content-Length': str(len(file_content)),
                     'Cache-Control': 'no-cache'
                 }
             )
@@ -602,8 +599,8 @@ def download_shared_document(token, documentId):
             current_app.logger.info(f"Streaming file: {document['filename']}")
             return response
 
-        except requests.exceptions.RequestException as e:
-            current_app.logger.error(f"Failed to fetch file from Copyparty: {e}")
+        except Exception as e:
+            current_app.logger.error(f"Failed to fetch file from storage: {e}")
             return jsonify({"error": "File not accessible"}), 503
 
     except Exception as e:
@@ -646,16 +643,18 @@ def download_all_shared_documents(token):
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             for doc in documents:
                 try:
-                    # Download file from Copyparty
-                    file_response = requests.get(doc['url'], timeout=30)
-                    file_response.raise_for_status()
+                    # Download file using storage service
+                    file_content, _ = storage_service.download_file(
+                        doc['url'],
+                        doc.get('storage_type', 'copyparty')
+                    )
 
                     # Add file to zip with original filename
                     # Use category prefix to organize files in zip
                     safe_filename = secure_filename(doc['filename'])
                     zip_filename = f"{doc['category']}/{safe_filename}"
 
-                    zip_file.writestr(zip_filename, file_response.content)
+                    zip_file.writestr(zip_filename, file_content)
                     current_app.logger.info(f"Added {safe_filename} to zip")
 
                 except Exception as e:

@@ -2,3 +2,4 @@
 .idea/
 Pipfile.lock
 __pycache__/
+gs_credentials.json
