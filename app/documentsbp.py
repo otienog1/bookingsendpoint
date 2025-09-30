@@ -3,7 +3,7 @@ from .mongodb_models import Booking, User
 from . import mongo
 from bson import ObjectId
 from .authbp import token_required
-from .storage_service import storage_service
+from .storage_service import get_storage_service
 import os
 import hashlib
 import hmac
@@ -224,7 +224,7 @@ def upload_document(current_user, booking_id):
             category = 'Other'
 
         # Upload using storage service (Copyparty with GCS fallback)
-        upload_result = storage_service.upload_file(file, booking_id, category, file.filename)
+        upload_result = get_storage_service().upload_file(file, booking_id, category, file.filename)
 
         # Save document metadata to database
         document = {
@@ -558,7 +558,7 @@ def download_shared_document(token, documentId):
 
         # Download file using storage service
         try:
-            file_content, content_type = storage_service.download_file(
+            file_content, content_type = get_storage_service().download_file(
                 document['url'],
                 document.get('storage_type', 'copyparty')
             )
@@ -644,7 +644,7 @@ def download_all_shared_documents(token):
             for doc in documents:
                 try:
                     # Download file using storage service
-                    file_content, _ = storage_service.download_file(
+                    file_content, _ = get_storage_service().download_file(
                         doc['url'],
                         doc.get('storage_type', 'copyparty')
                     )

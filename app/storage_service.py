@@ -255,5 +255,15 @@ class StorageService:
         return file_content, content_type
 
 
-# Global storage service instance
-storage_service = StorageService()
+# Global storage service instance (lazy-loaded)
+_storage_service = None
+
+def get_storage_service():
+    """Get or create the storage service instance."""
+    global _storage_service
+    if _storage_service is None:
+        _storage_service = StorageService()
+    return _storage_service
+
+# For backward compatibility
+storage_service = None
