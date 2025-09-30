@@ -3,3 +3,8 @@
 Pipfile.lock
 __pycache__/
 gs_credentials_.json
+gs_credentials.json
+google_credentials.json
+*credentials*.json
+*.pem
+*.p12
