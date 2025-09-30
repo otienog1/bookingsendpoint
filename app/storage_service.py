@@ -63,10 +63,19 @@ class StorageService:
                 import logging
                 logger = logging.getLogger(__name__)
 
-            if self.gcs_config['credentials_json']:
+            # Check if credentials_json is not empty
+            if self.gcs_config['credentials_json'] and self.gcs_config['credentials_json'].strip():
                 logger.info("Initializing GCS client with JSON credentials from environment")
+                logger.debug(f"GCS_CREDENTIALS_JSON length: {len(self.gcs_config['credentials_json'])}")
+
                 # Use JSON credentials from environment variable
-                credentials_info = json.loads(self.gcs_config['credentials_json'])
+                try:
+                    credentials_info = json.loads(self.gcs_config['credentials_json'])
+                except json.JSONDecodeError as je:
+                    logger.error(f"Failed to parse GCS_CREDENTIALS_JSON: {je}")
+                    logger.error(f"First 100 chars: {self.gcs_config['credentials_json'][:100]}")
+                    raise
+
                 self.gcs_client = storage.Client.from_service_account_info(
                     credentials_info,
                     project=self.gcs_config['project_id']

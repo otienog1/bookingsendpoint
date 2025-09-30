@@ -9,7 +9,7 @@ import hashlib
 import hmac
 import time
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import traceback
 import requests
 from werkzeug.utils import secure_filename
@@ -18,6 +18,19 @@ import io
 import urllib.parse
 
 documentsbp = Blueprint("documentsbp", __name__)
+
+
+def ensure_timezone_aware(dt):
+    """
+    Ensure a datetime object is timezone-aware (UTC).
+    If it's naive, assume it's UTC and add timezone info.
+    """
+    if dt is None:
+        return None
+    if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+        # Naive datetime - assume UTC
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
 
 # Configuration constants
 ALLOWED_EXTENSIONS = {'pdf', 'jpg', 'jpeg', 'png', 'docx'}
@@ -72,7 +85,7 @@ def verify_share_token(token):
             return None
 
         # Check expiration
-        if share_record['expires_at'] < datetime.utcnow():
+        if share_record['expires_at'] < datetime.now(timezone.utc):
             current_app.logger.error(f"Share token expired: {token}")
             return None
 
@@ -157,7 +170,7 @@ def get_documents(current_user, booking_id):
                 "filename": doc['filename'],
                 "category": doc['category'],
                 "size": doc['size'],
-                "uploadedAt": doc['uploaded_at'].isoformat(),
+                "uploadedAt": ensure_timezone_aware(doc['uploaded_at']).isoformat(),
                 "url": doc['url'],
                 "mimeType": doc['mime_type'],
                 "bookingId": str(doc['booking_id'])
@@ -237,7 +250,7 @@ def upload_document(current_user, booking_id):
             "url": upload_result['url'],
             "path": upload_result['path'],
             "storage_type": upload_result['storage_type'],
-            "uploaded_at": datetime.utcnow(),
+            "uploaded_at": datetime.now(timezone.utc),
             "uploaded_by": ObjectId(current_user['_id'])
         }
 
@@ -253,7 +266,7 @@ def upload_document(current_user, booking_id):
                 "filename": document['filename'],
                 "category": document['category'],
                 "size": document['size'],
-                "uploadedAt": document['uploaded_at'].isoformat(),
+                "uploadedAt": ensure_timezone_aware(document['uploaded_at']).isoformat(),
                 "url": document['url'],
                 "mimeType": document['mime_type'],
                 "bookingId": str(document['booking_id'])
@@ -385,7 +398,7 @@ def get_existing_share_link(current_user, booking_id):
             return jsonify({"error": "Unauthorized access"}), 403
 
         # Find the most recent non-expired share token for this booking
-        current_time = datetime.utcnow()
+        current_time = datetime.now(timezone.utc)
         share_record = mongo.db.share_tokens.find_one({
             "booking_id": ObjectId(booking_id),
             "expires_at": {"$gt": current_time}
@@ -443,7 +456,7 @@ def generate_share_link(current_user, booking_id):
             "token": token,
             "categories": categories,
             "expires_at": datetime.fromtimestamp(expires_at),
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now(timezone.utc),
             "created_by": ObjectId(current_user['_id']),
             "used_count": 0
         }
@@ -497,7 +510,7 @@ def view_shared_documents(token):
                 "filename": doc['filename'],
                 "category": doc['category'],
                 "size": doc['size'],
-                "uploadedAt": doc['uploaded_at'].isoformat(),
+                "uploadedAt": ensure_timezone_aware(doc['uploaded_at']).isoformat(),
                 "downloadUrl": f"/api/share/{token}/download/{doc['_id']}"
             })
 
