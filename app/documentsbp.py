@@ -84,16 +84,20 @@ def verify_share_token(token):
             current_app.logger.error(f"Share token not found: {token}")
             return None
 
-        # Check expiration
-        if share_record['expires_at'] < datetime.now(timezone.utc):
+        # Check expiration - ensure timezone-aware comparison
+        expires_at = ensure_timezone_aware(share_record['expires_at'])
+        now = datetime.now(timezone.utc)
+
+        if expires_at < now:
             current_app.logger.error(f"Share token expired: {token}")
+            current_app.logger.error(f"Expires at: {expires_at}, Now: {now}")
             return None
 
         # Return payload format expected by the endpoint
         return {
             'booking_id': str(share_record['booking_id']),
             'categories': share_record['categories'],
-            'expires_at': int(share_record['expires_at'].timestamp())
+            'expires_at': int(ensure_timezone_aware(share_record['expires_at']).timestamp())
         }
     except Exception as e:
         current_app.logger.error(f"Error verifying share token: {str(e)}")
@@ -414,9 +418,9 @@ def get_existing_share_link(current_user, booking_id):
         return jsonify({
             "token": share_record['token'],
             "shareUrl": share_url,
-            "expiresAt": share_record['expires_at'].isoformat(),
+            "expiresAt": ensure_timezone_aware(share_record['expires_at']).isoformat(),
             "allowedCategories": share_record['categories'],
-            "createdAt": share_record['created_at'].isoformat(),
+            "createdAt": ensure_timezone_aware(share_record['created_at']).isoformat(),
             "usedCount": share_record.get('used_count', 0)
         })
 
@@ -455,7 +459,7 @@ def generate_share_link(current_user, booking_id):
             "booking_id": ObjectId(booking_id),
             "token": token,
             "categories": categories,
-            "expires_at": datetime.fromtimestamp(expires_at),
+            "expires_at": datetime.fromtimestamp(expires_at, tz=timezone.utc),
             "created_at": datetime.now(timezone.utc),
             "created_by": ObjectId(current_user['_id']),
             "used_count": 0
@@ -466,7 +470,7 @@ def generate_share_link(current_user, booking_id):
         return jsonify({
             "token": token,
             "shareUrl": share_url,
-            "expiresAt": datetime.fromtimestamp(expires_at).isoformat(),
+            "expiresAt": datetime.fromtimestamp(expires_at, tz=timezone.utc).isoformat(),
             "categories": categories
         })
 
