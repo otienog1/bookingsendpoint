@@ -93,6 +93,16 @@ def create_app():
             app_.logger.error(f"Redis connection failed: {e}")
             app_.redis = None
 
+    # Root endpoint
+    @app_.route('/', methods=['GET'])
+    def root():
+        """Root endpoint for health check"""
+        return jsonify({
+            'status': 'ok',
+            'message': 'Bookings API is running',
+            'version': '1.0.0'
+        })
+
     # Debug endpoints
     @app_.route('/debug/config', methods=['GET'])
     def debug_config():
