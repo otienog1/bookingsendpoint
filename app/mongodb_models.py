@@ -337,3 +337,83 @@ class Booking(BaseModel):
             if current_app:
                 current_app.logger.error(f"Error converting booking to dict: {str(e)}")
             return {"id": str(booking_doc["_id"]), "error": "Error converting booking data"}
+
+
+class Airport(BaseModel):
+    __collection_name__ = 'airports'
+
+    @classmethod
+    def get_all(cls):
+        """Get all airports"""
+        return cls.find_many()
+
+    @classmethod
+    def find_by_iata(cls, iata_code):
+        """Find airport by IATA code"""
+        return cls.find_one({"iata_code": iata_code})
+
+    @classmethod
+    def find_by_country(cls, country):
+        """Find airports by country"""
+        return cls.find_many({"country": country})
+
+    @classmethod
+    def find_by_city(cls, city):
+        """Find airports by city"""
+        return cls.find_many({"city": city})
+
+    @classmethod
+    def search(cls, query):
+        """Search airports by name, city, country, or IATA code"""
+        search_regex = {"$regex": query, "$options": "i"}
+        return cls.find_many({
+            "$or": [
+                {"name": search_regex},
+                {"city": search_regex},
+                {"country": search_regex},
+                {"iata_code": search_regex}
+            ]
+        })
+
+    @classmethod
+    def create_airport(cls, name, city, country, iata_code, latitude=None, longitude=None, links_count=0):
+        """Create a new airport"""
+        airport_data = {
+            "name": name,
+            "city": city,
+            "country": country,
+            "iata_code": iata_code.upper(),
+            "latitude": latitude,
+            "longitude": longitude,
+            "links_count": links_count
+        }
+
+        # Remove None values
+        airport_data = {k: v for k, v in airport_data.items() if v is not None}
+
+        airport_id = cls.insert_one(airport_data)
+        return cls.find_by_id(airport_id)
+
+    @staticmethod
+    def to_dict(airport_doc):
+        """Convert airport document to dictionary"""
+        if not airport_doc:
+            return None
+        try:
+            result = {
+                "id": str(airport_doc["_id"]),
+                "name": airport_doc["name"],
+                "city": airport_doc["city"],
+                "country": airport_doc["country"],
+                "iata_code": airport_doc["iata_code"],
+                "latitude": airport_doc.get("latitude"),
+                "longitude": airport_doc.get("longitude"),
+                "links_count": airport_doc.get("links_count", 0),
+                "created_at": airport_doc.get("created_at"),
+                "updated_at": airport_doc.get("updated_at")
+            }
+            return result
+        except Exception as e:
+            if current_app:
+                current_app.logger.error(f"Error converting airport to dict: {str(e)}")
+            return {"id": str(airport_doc["_id"]), "error": "Error converting airport data"}

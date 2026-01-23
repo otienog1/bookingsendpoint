@@ -78,6 +78,14 @@ def create_app():
     from .healthbp import healthbp as health_blueprint
     app_.register_blueprint(health_blueprint)
 
+    # Register itinerary management blueprint
+    from .itinerarybp import itinerarybp as itinerary_blueprint
+    app_.register_blueprint(itinerary_blueprint)
+
+    # Register scraper blueprint (for scraping operations and AI agent)
+    from .scraper.scraperbp import scraperbp as scraper_blueprint
+    app_.register_blueprint(scraper_blueprint)
+
     # Log successful initialization with config info
     app_.logger.info(f"Application initialized successfully in {app_.config.get('ENV', 'development')} mode")
     app_.logger.info(

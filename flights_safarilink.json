@@ -1,0 +1,1330 @@
+{
+  "meta": {
+    "validity": "Valid up to 2025-12-31",
+    "low_season": [
+      "2025-04-01 to 2025-06-15",
+      "2025-11-01 to 2025-12-15"
+    ],
+    "high_season": [
+      "2025-01-01 to 2025-03-31",
+      "2025-06-16 to 2025-10-31",
+      "2025-12-16 to 2025-12-31"
+    ],
+    "check_in": {
+      "international": "90 minutes before departure (Zanzibar & Kilimanjaro)",
+      "major_airports": "60 minutes before departure (Wilson, Malindi, Mombasa, Kisumu, Diani, Lamu)",
+      "bush_airstrips": "30 minutes before departure"
+    },
+    "contacts": {
+      "call_centre": "020 669 0000",
+      "nairobi_mobile": "+254 730 888000",
+      "emails": {
+        "reservations": "res@flysafarilink.com",
+        "diani": "dianioffice@flysafarilink.com",
+        "kisumu": "kisumuoffice@flysafarilink.com",
+        "malindi": "malindioffice@flysafarilink.com",
+        "lamu": "lamuoffice@flysafarilink.com",
+        "mombasa": "mbaairport@flysafarilink.com",
+        "zanzibar": "znzoffice@flysafarilink.com"
+      },
+      "website": "www.flysafarilink.com"
+    }
+  },
+  "flights": [
+    {
+      "flight_no": "11",
+      "from": "Nairobi (Wilson)",
+      "to": "Amboseli",
+      "days_of_operation": "D",
+      "depart": "07:15",
+      "arrive": "08:00",
+      "fares": {
+        "low_season": {
+          "single": 185.0,
+          "return": 185.0
+        },
+        "high_season": {
+          "single": 185.0,
+          "return": 185.0
+        }
+      },
+      "notes_keys": [
+        "a"
+      ],
+      "notes_expanded": [
+        "Combined service for Amboseli and Tsavo West (Flights 11-16). Flights 11-14 operate subject to minimum 4 passengers per service and minimum 2 passengers per airstrip. Flights 15 & 16 operate subject to minimum 4 passengers in high season and do not operate in low season. Airstrips: Amboseli, Kimana, Oldonyo and Finch Hattons. Kimana subject to minimum 4 pax at a supplement."
+      ]
+    },
+    {
+      "flight_no": "15",
+      "from": "Nairobi (Wilson)",
+      "to": "Amboseli",
+      "days_of_operation": "D",
+      "depart": "14:00",
+      "arrive": "14:40",
+      "fares": {
+        "low_season": {
+          "single": 185.0,
+          "return": 185.0
+        },
+        "high_season": {
+          "single": 185.0,
+          "return": 185.0
+        }
+      },
+      "notes_keys": [
+        "a",
+        "b"
+      ],
+      "notes_expanded": [
+        "Combined service for Amboseli and Tsavo West (Flights 11-16). Flights 11-14 operate subject to minimum 4 passengers per service and minimum 2 passengers per airstrip. Flights 15 & 16 operate subject to minimum 4 passengers in high season and do not operate in low season. Airstrips: Amboseli, Kimana, Oldonyo and Finch Hattons. Kimana subject to minimum 4 pax at a supplement.",
+        "These flights operate during high seasons only."
+      ]
+    },
+    {
+      "flight_no": "53",
+      "from": "Nairobi (Wilson)",
+      "to": "Diani( Ukunda)",
+      "days_of_operation": "D",
+      "depart": "09:45",
+      "arrive": "10:55",
+      "fares": {
+        "low_season": {
+          "single": 184.0,
+          "return": 184.0
+        },
+        "high_season": {
+          "single": 184.0,
+          "return": 184.0
+        }
+      },
+      "notes_keys": [],
+      "notes_expanded": []
+    },
+    {
+      "flight_no": "55",
+      "from": "Nairobi (Wilson)",
+      "to": "Diani( Ukunda)",
+      "days_of_operation": "D",
+      "depart": "14:00",
+      "arrive": "15:15",
+      "fares": {
+        "low_season": {
+          "single": 184.0,
+          "return": 184.0
+        },
+        "high_season": {
+          "single": 184.0,
+          "return": 184.0
+        }
+      },
+      "notes_keys": [],
+      "notes_expanded": []
+    },
+    {
+      "flight_no": "57",
+      "from": "Nairobi (Wilson)",
+      "to": "Diani( Ukunda)",
+      "days_of_operation": "1,4,5,7",
+      "depart": "15:45",
+      "arrive": "17:00",
+      "fares": {
+        "low_season": {
+          "single": 184.0,
+          "return": 184.0
+        },
+        "high_season": {
+          "single": 184.0,
+          "return": 184.0
+        }
+      },
+      "notes_keys": [
+        "b"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only."
+      ]
+    },
+    {
+      "flight_no": "41",
+      "from": "Nairobi (Wilson)",
+      "to": "Kilimanjaro",
+      "days_of_operation": "D",
+      "depart": "13:10",
+      "arrive": "14:10",
+      "fares": {
+        "low_season": {
+          "single": 180.0,
+          "return": 180.0
+        },
+        "high_season": {
+          "single": 180.0,
+          "return": 180.0
+        }
+      },
+      "notes_keys": [
+        "c"
+      ],
+      "notes_expanded": [
+        "Flights 41, 42, 07 & 08 connect to flights into/from northern Tanzania (bookable). Services to Kilimanjaro & Migori subject to minimum 6 pax in low season and 4 pax in high season."
+      ]
+    },
+    {
+      "flight_no": "81",
+      "from": "Nairobi (Wilson)",
+      "to": "Kisumu",
+      "days_of_operation": "D x7",
+      "depart": "07:00",
+      "arrive": "07:50",
+      "fares": {
+        "low_season": {
+          "single": 145.0,
+          "return": 145.0
+        },
+        "high_season": {
+          "single": 145.0,
+          "return": 145.0
+        }
+      },
+      "notes_keys": [],
+      "notes_expanded": []
+    },
+    {
+      "flight_no": "85",
+      "from": "Nairobi (Wilson)",
+      "to": "Kisumu",
+      "days_of_operation": "6,7",
+      "depart": "11:00",
+      "arrive": "11:50",
+      "fares": {
+        "low_season": {
+          "single": 145.0,
+          "return": 145.0
+        },
+        "high_season": {
+          "single": 145.0,
+          "return": 145.0
+        }
+      },
+      "notes_keys": [],
+      "notes_expanded": []
+    },
+    {
+      "flight_no": "89",
+      "from": "Nairobi (Wilson)",
+      "to": "Kisumu",
+      "days_of_operation": "D",
+      "depart": "18:00",
+      "arrive": "18:50",
+      "fares": {
+        "low_season": {
+          "single": 145.0,
+          "return": 145.0
+        },
+        "high_season": {
+          "single": 145.0,
+          "return": 145.0
+        }
+      },
+      "notes_keys": [],
+      "notes_expanded": []
+    },
+    {
+      "flight_no": "51",
+      "from": "Nairobi (Wilson)",
+      "to": "Lamu",
+      "days_of_operation": "D",
+      "depart": "14:00",
+      "arrive": "16:15",
+      "fares": {
+        "low_season": {
+          "single": 205.0,
+          "return": 205.0
+        },
+        "high_season": {
+          "single": 205.0,
+          "return": 205.0
+        }
+      },
+      "notes_keys": [
+        "g"
+      ],
+      "notes_expanded": [
+        "Flights 51 & 52 route Wilson – Malindi – Lamu – Malindi – Wilson."
+      ]
+    },
+    {
+      "flight_no": "21",
+      "from": "Nairobi (Wilson)",
+      "to": "Lewa Downs",
+      "days_of_operation": "D",
+      "depart": "08:00",
+      "arrive": "09:30",
+      "fares": {
+        "low_season": {
+          "single": 258.0,
+          "return": 258.0
+        },
+        "high_season": {
+          "single": 258.0,
+          "return": 258.0
+        }
+      },
+      "notes_keys": [
+        "a",
+        "b",
+        "d"
+      ],
+      "notes_expanded": [
+        "Combined service for Amboseli and Tsavo West (Flights 11-16). Flights 11-14 operate subject to minimum 4 passengers per service and minimum 2 passengers per airstrip. Flights 15 & 16 operate subject to minimum 4 passengers in high season and do not operate in low season. Airstrips: Amboseli, Kimana, Oldonyo and Finch Hattons. Kimana subject to minimum 4 pax at a supplement.",
+        "These flights operate during high seasons only.",
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "23",
+      "from": "Nairobi (Wilson)",
+      "to": "Lewa Downs",
+      "days_of_operation": "D",
+      "depart": "10:20",
+      "arrive": "11:20",
+      "fares": {
+        "low_season": {
+          "single": 258.0,
+          "return": 258.0
+        },
+        "high_season": {
+          "single": 258.0,
+          "return": 258.0
+        }
+      },
+      "notes_keys": [
+        "d"
+      ],
+      "notes_expanded": [
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "25",
+      "from": "Nairobi (Wilson)",
+      "to": "Lewa Downs",
+      "days_of_operation": "D",
+      "depart": "13:30",
+      "arrive": "14:50",
+      "fares": {
+        "low_season": {
+          "single": 258.0,
+          "return": 258.0
+        },
+        "high_season": {
+          "single": 258.0,
+          "return": 258.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "d"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "21",
+      "from": "Nairobi (Wilson)",
+      "to": "Loisaba",
+      "days_of_operation": "D",
+      "depart": "08:00",
+      "arrive": "09:30",
+      "fares": {
+        "low_season": {
+          "single": 258.0,
+          "return": 258.0
+        },
+        "high_season": {
+          "single": 258.0,
+          "return": 258.0
+        }
+      },
+      "notes_keys": [
+        "a",
+        "b",
+        "d"
+      ],
+      "notes_expanded": [
+        "Combined service for Amboseli and Tsavo West (Flights 11-16). Flights 11-14 operate subject to minimum 4 passengers per service and minimum 2 passengers per airstrip. Flights 15 & 16 operate subject to minimum 4 passengers in high season and do not operate in low season. Airstrips: Amboseli, Kimana, Oldonyo and Finch Hattons. Kimana subject to minimum 4 pax at a supplement.",
+        "These flights operate during high seasons only.",
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "23",
+      "from": "Nairobi (Wilson)",
+      "to": "Loisaba",
+      "days_of_operation": "D",
+      "depart": "10:20",
+      "arrive": "11:20",
+      "fares": {
+        "low_season": {
+          "single": 258.0,
+          "return": 258.0
+        },
+        "high_season": {
+          "single": 258.0,
+          "return": 258.0
+        }
+      },
+      "notes_keys": [
+        "d"
+      ],
+      "notes_expanded": [
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "25",
+      "from": "Nairobi (Wilson)",
+      "to": "Loisaba",
+      "days_of_operation": "D",
+      "depart": "13:30",
+      "arrive": "14:50",
+      "fares": {
+        "low_season": {
+          "single": 258.0,
+          "return": 258.0
+        },
+        "high_season": {
+          "single": 258.0,
+          "return": 258.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "d"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "51",
+      "from": "Nairobi Wilson",
+      "to": "Malindi",
+      "days_of_operation": "D",
+      "depart": "14:00",
+      "arrive": "15:15",
+      "fares": {
+        "low_season": {
+          "single": 184.0,
+          "return": 184.0
+        },
+        "high_season": {
+          "single": 184.0,
+          "return": 184.0
+        }
+      },
+      "notes_keys": [
+        "g"
+      ],
+      "notes_expanded": [
+        "Flights 51 & 52 route Wilson – Malindi – Lamu – Malindi – Wilson."
+      ]
+    },
+    {
+      "flight_no": "5",
+      "from": "Nairobi (Wilson)",
+      "to": "Masai Mara",
+      "days_of_operation": "D",
+      "depart": "07:15",
+      "arrive": "08:15",
+      "fares": {
+        "low_season": {
+          "single": 225.0,
+          "return": 225.0
+        },
+        "high_season": {
+          "single": 225.0,
+          "return": 225.0
+        }
+      },
+      "notes_keys": [
+        "b"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only."
+      ]
+    },
+    {
+      "flight_no": "1",
+      "from": "Nairobi (Wilson)",
+      "to": "Masai Mara",
+      "days_of_operation": "D",
+      "depart": "10:00",
+      "arrive": "11:00",
+      "fares": {
+        "low_season": {
+          "single": 225.0,
+          "return": 225.0
+        },
+        "high_season": {
+          "single": 225.0,
+          "return": 225.0
+        }
+      },
+      "notes_keys": [
+        "e"
+      ],
+      "notes_expanded": [
+        "Masai Mara flights: Flight 01 can route via Naivasha (Loldia); Loldia strip subject to min 4 pax year-round. Flights 03-09 subject to min 4 pax in both seasons. Landings limited to max 4 stops per aircraft."
+      ]
+    },
+    {
+      "flight_no": "3",
+      "from": "Nairobi (Wilson)",
+      "to": "Masai Mara",
+      "days_of_operation": "D",
+      "depart": "14:15",
+      "arrive": "15:15",
+      "fares": {
+        "low_season": {
+          "single": 225.0,
+          "return": 225.0
+        },
+        "high_season": {
+          "single": 225.0,
+          "return": 225.0
+        }
+      },
+      "notes_keys": [
+        "e"
+      ],
+      "notes_expanded": [
+        "Masai Mara flights: Flight 01 can route via Naivasha (Loldia); Loldia strip subject to min 4 pax year-round. Flights 03-09 subject to min 4 pax in both seasons. Landings limited to max 4 stops per aircraft."
+      ]
+    },
+    {
+      "flight_no": "9",
+      "from": "Nairobi (Wilson)",
+      "to": "Masai Mara",
+      "days_of_operation": "D",
+      "depart": "16:00",
+      "arrive": "17:00",
+      "fares": {
+        "low_season": {
+          "single": 225.0,
+          "return": 225.0
+        },
+        "high_season": {
+          "single": 225.0,
+          "return": 225.0
+        }
+      },
+      "notes_keys": [
+        "b"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only."
+      ]
+    },
+    {
+      "flight_no": "1",
+      "from": "Nairobi (Wilson)",
+      "to": "Naivasha (Loldia)",
+      "days_of_operation": "D",
+      "depart": "10:00",
+      "arrive": "10:10",
+      "fares": {
+        "low_season": {
+          "single": 159.0,
+          "return": 159.0
+        },
+        "high_season": {
+          "single": 159.0,
+          "return": 159.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "e"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Masai Mara flights: Flight 01 can route via Naivasha (Loldia); Loldia strip subject to min 4 pax year-round. Flights 03-09 subject to min 4 pax in both seasons. Landings limited to max 4 stops per aircraft."
+      ]
+    },
+    {
+      "flight_no": "45",
+      "from": "Nairobi (Wilson)",
+      "to": "Mombasa",
+      "days_of_operation": "D",
+      "depart": "14:00",
+      "arrive": "15:10",
+      "fares": {
+        "low_season": {
+          "single": 184.0,
+          "return": 184.0
+        },
+        "high_season": {
+          "single": 184.0,
+          "return": 184.0
+        }
+      },
+      "notes_keys": [
+        "i"
+      ],
+      "notes_expanded": [
+        "These flight timings apply in low season only."
+      ]
+    },
+    {
+      "flight_no": "21",
+      "from": "Nairobi (Wilson)",
+      "to": "Nanyuki",
+      "days_of_operation": "D",
+      "depart": "08:00",
+      "arrive": "09:30",
+      "fares": {
+        "low_season": {
+          "single": 185.0,
+          "return": 185.0
+        },
+        "high_season": {
+          "single": 185.0,
+          "return": 185.0
+        }
+      },
+      "notes_keys": [
+        "a",
+        "b",
+        "d"
+      ],
+      "notes_expanded": [
+        "Combined service for Amboseli and Tsavo West (Flights 11-16). Flights 11-14 operate subject to minimum 4 passengers per service and minimum 2 passengers per airstrip. Flights 15 & 16 operate subject to minimum 4 passengers in high season and do not operate in low season. Airstrips: Amboseli, Kimana, Oldonyo and Finch Hattons. Kimana subject to minimum 4 pax at a supplement.",
+        "These flights operate during high seasons only.",
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "23",
+      "from": "Nairobi (Wilson)",
+      "to": "Nanyuki",
+      "days_of_operation": "D",
+      "depart": "10:20",
+      "arrive": "11:20",
+      "fares": {
+        "low_season": {
+          "single": 185.0,
+          "return": 185.0
+        },
+        "high_season": {
+          "single": 185.0,
+          "return": 185.0
+        }
+      },
+      "notes_keys": [
+        "d"
+      ],
+      "notes_expanded": [
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "25",
+      "from": "Nairobi (Wilson)",
+      "to": "Nanyuki",
+      "days_of_operation": "D",
+      "depart": "13:30",
+      "arrive": "14:50",
+      "fares": {
+        "low_season": {
+          "single": 185.0,
+          "return": 185.0
+        },
+        "high_season": {
+          "single": 185.0,
+          "return": 185.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "d"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "21",
+      "from": "Nairobi (Wilson)",
+      "to": "Samburu",
+      "days_of_operation": "D",
+      "depart": "08:00",
+      "arrive": "09:30",
+      "fares": {
+        "low_season": {
+          "single": 258.0,
+          "return": 258.0
+        },
+        "high_season": {
+          "single": 258.0,
+          "return": 258.0
+        }
+      },
+      "notes_keys": [
+        "a",
+        "b",
+        "d"
+      ],
+      "notes_expanded": [
+        "Combined service for Amboseli and Tsavo West (Flights 11-16). Flights 11-14 operate subject to minimum 4 passengers per service and minimum 2 passengers per airstrip. Flights 15 & 16 operate subject to minimum 4 passengers in high season and do not operate in low season. Airstrips: Amboseli, Kimana, Oldonyo and Finch Hattons. Kimana subject to minimum 4 pax at a supplement.",
+        "These flights operate during high seasons only.",
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "23",
+      "from": "Nairobi (Wilson)",
+      "to": "Samburu",
+      "days_of_operation": "D",
+      "depart": "10:20",
+      "arrive": "11:20",
+      "fares": {
+        "low_season": {
+          "single": 258.0,
+          "return": 258.0
+        },
+        "high_season": {
+          "single": 258.0,
+          "return": 258.0
+        }
+      },
+      "notes_keys": [
+        "d"
+      ],
+      "notes_expanded": [
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "25",
+      "from": "Nairobi (Wilson)",
+      "to": "Samburu",
+      "days_of_operation": "D",
+      "depart": "13:30",
+      "arrive": "14:50",
+      "fares": {
+        "low_season": {
+          "single": 258.0,
+          "return": 258.0
+        },
+        "high_season": {
+          "single": 258.0,
+          "return": 258.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "d"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined."
+      ]
+    },
+    {
+      "flight_no": "13",
+      "from": "Nairobi (Wilson)",
+      "to": "Tsavo West",
+      "days_of_operation": "D",
+      "depart": "07:15",
+      "arrive": "08:05",
+      "fares": {
+        "low_season": {
+          "single": 231.0,
+          "return": 231.0
+        },
+        "high_season": {
+          "single": 231.0,
+          "return": 231.0
+        }
+      },
+      "notes_keys": [
+        "a"
+      ],
+      "notes_expanded": [
+        "Combined service for Amboseli and Tsavo West (Flights 11-16). Flights 11-14 operate subject to minimum 4 passengers per service and minimum 2 passengers per airstrip. Flights 15 & 16 operate subject to minimum 4 passengers in high season and do not operate in low season. Airstrips: Amboseli, Kimana, Oldonyo and Finch Hattons. Kimana subject to minimum 4 pax at a supplement."
+      ]
+    },
+    {
+      "flight_no": "15",
+      "from": "Nairobi (Wilson)",
+      "to": "Tsavo West",
+      "days_of_operation": "D",
+      "depart": "14:00",
+      "arrive": "14:55",
+      "fares": {
+        "low_season": {
+          "single": 231.0,
+          "return": 231.0
+        },
+        "high_season": {
+          "single": 231.0,
+          "return": 231.0
+        }
+      },
+      "notes_keys": [
+        "a",
+        "b"
+      ],
+      "notes_expanded": [
+        "Combined service for Amboseli and Tsavo West (Flights 11-16). Flights 11-14 operate subject to minimum 4 passengers per service and minimum 2 passengers per airstrip. Flights 15 & 16 operate subject to minimum 4 passengers in high season and do not operate in low season. Airstrips: Amboseli, Kimana, Oldonyo and Finch Hattons. Kimana subject to minimum 4 pax at a supplement.",
+        "These flights operate during high seasons only."
+      ]
+    },
+    {
+      "flight_no": "47",
+      "from": "Nairobi (Wilson)",
+      "to": "Zanzibar",
+      "days_of_operation": "D",
+      "depart": "14:00",
+      "arrive": "15:30",
+      "fares": {
+        "low_season": {
+          "single": 284.0,
+          "return": 284.0
+        },
+        "high_season": {
+          "single": 284.0,
+          "return": 284.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "h"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Flights 45 & 46 route Wilson – Mombasa – Zanzibar – Mombasa – Wilson in low season; Flights 47 & 48 operate in high season only and route Nairobi - Zanzibar – Mombasa – Wilson."
+      ]
+    },
+    {
+      "flight_no": "45",
+      "from": "Nairobi (Wilson)",
+      "to": "Zanzibar",
+      "days_of_operation": "1,4,5,7",
+      "depart": "14:00",
+      "arrive": "16:55",
+      "fares": {
+        "low_season": {
+          "single": 284.0,
+          "return": 284.0
+        },
+        "high_season": {
+          "single": 284.0,
+          "return": 284.0
+        }
+      },
+      "notes_keys": [
+        "h",
+        "i"
+      ],
+      "notes_expanded": [
+        "Flights 45 & 46 route Wilson – Mombasa – Zanzibar – Mombasa – Wilson in low season; Flights 47 & 48 operate in high season only and route Nairobi - Zanzibar – Mombasa – Wilson.",
+        "These flight timings apply in low season only."
+      ]
+    },
+    {
+      "flight_no": "54",
+      "from": "Nairobi (Wilson)",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "11:25",
+      "arrive": "12:35",
+      "fares": {
+        "low_season": {
+          "single": 184.0,
+          "return": 184.0
+        },
+        "high_season": {
+          "single": 184.0,
+          "return": 184.0
+        }
+      },
+      "notes_keys": [],
+      "notes_expanded": []
+    },
+    {
+      "flight_no": "56",
+      "from": "Diani",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "15:45",
+      "arrive": "17:00",
+      "fares": {
+        "low_season": {
+          "single": 184.0,
+          "return": 184.0
+        },
+        "high_season": {
+          "single": 184.0,
+          "return": 184.0
+        }
+      },
+      "notes_keys": [],
+      "notes_expanded": []
+    },
+    {
+      "flight_no": "58",
+      "from": "Nairobi (Wilson)",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "1,4,5,7",
+      "depart": "17:30",
+      "arrive": "18:40",
+      "fares": {
+        "low_season": {
+          "single": 184.0,
+          "return": 184.0
+        },
+        "high_season": {
+          "single": 184.0,
+          "return": 184.0
+        }
+      },
+      "notes_keys": [
+        "b"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only."
+      ]
+    },
+    {
+      "flight_no": "42",
+      "from": "Kilimanjaro",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "14:25          15:20",
+      "arrive": null,
+      "fares": {
+        "low_season": {
+          "single": 180.0,
+          "return": 180.0
+        },
+        "high_season": {
+          "single": 180.0,
+          "return": 180.0
+        }
+      },
+      "notes_keys": [
+        "c"
+      ],
+      "notes_expanded": [
+        "Flights 41, 42, 07 & 08 connect to flights into/from northern Tanzania (bookable). Services to Kilimanjaro & Migori subject to minimum 6 pax in low season and 4 pax in high season."
+      ]
+    },
+    {
+      "flight_no": "82",
+      "from": "Nairobi (Wilson)",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D x7",
+      "depart": "08:10",
+      "arrive": "09:00",
+      "fares": {
+        "low_season": {
+          "single": 145.0,
+          "return": 145.0
+        },
+        "high_season": {
+          "single": 145.0,
+          "return": 145.0
+        }
+      },
+      "notes_keys": [],
+      "notes_expanded": []
+    },
+    {
+      "flight_no": "86",
+      "from": "Kisumu",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "6,7",
+      "depart": "12:10",
+      "arrive": "13:00",
+      "fares": {
+        "low_season": {
+          "single": 145.0,
+          "return": 145.0
+        },
+        "high_season": {
+          "single": 145.0,
+          "return": 145.0
+        }
+      },
+      "notes_keys": [],
+      "notes_expanded": []
+    },
+    {
+      "flight_no": "90",
+      "from": "Nairobi (Wilson)",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "19:10",
+      "arrive": "20:00",
+      "fares": {
+        "low_season": {
+          "single": 145.0,
+          "return": 145.0
+        },
+        "high_season": {
+          "single": 145.0,
+          "return": 145.0
+        }
+      },
+      "notes_keys": [],
+      "notes_expanded": []
+    },
+    {
+      "flight_no": "52",
+      "from": "Malindi",
+      "to": "Lamu\nNairobi (Wilson)",
+      "days_of_operation": "D\nD",
+      "depart": "15:45          16:15\n18:00          19:15",
+      "arrive": null,
+      "fares": {
+        "low_season": {
+          "single": 95.0,
+          "return": 95.0
+        },
+        "high_season": {
+          "single": 95.0,
+          "return": 95.0
+        }
+      },
+      "notes_keys": [
+        "g\ng"
+      ],
+      "notes_expanded": [
+        "g\ng"
+      ]
+    },
+    {
+      "flight_no": "6",
+      "from": "Nairobi (Wilson)",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "08:30",
+      "arrive": "09:34",
+      "fares": {
+        "low_season": {
+          "single": 225.0,
+          "return": 225.0
+        },
+        "high_season": {
+          "single": 225.0,
+          "return": 225.0
+        }
+      },
+      "notes_keys": [
+        "b"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only."
+      ]
+    },
+    {
+      "flight_no": "2",
+      "from": "Nairobi (Wilson)",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "11:00",
+      "arrive": "12:20",
+      "fares": {
+        "low_season": {
+          "single": 225.0,
+          "return": 225.0
+        },
+        "high_season": {
+          "single": 225.0,
+          "return": 225.0
+        }
+      },
+      "notes_keys": [
+        "e"
+      ],
+      "notes_expanded": [
+        "Masai Mara flights: Flight 01 can route via Naivasha (Loldia); Loldia strip subject to min 4 pax year-round. Flights 03-09 subject to min 4 pax in both seasons. Landings limited to max 4 stops per aircraft."
+      ]
+    },
+    {
+      "flight_no": "4",
+      "from": "Masai Mara",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "15:15",
+      "arrive": "16:15",
+      "fares": {
+        "low_season": {
+          "single": 225.0,
+          "return": 225.0
+        },
+        "high_season": {
+          "single": 225.0,
+          "return": 225.0
+        }
+      },
+      "notes_keys": [
+        "e"
+      ],
+      "notes_expanded": [
+        "Masai Mara flights: Flight 01 can route via Naivasha (Loldia); Loldia strip subject to min 4 pax year-round. Flights 03-09 subject to min 4 pax in both seasons. Landings limited to max 4 stops per aircraft."
+      ]
+    },
+    {
+      "flight_no": "10",
+      "from": "Nairobi (Wilson)",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "17:00",
+      "arrive": "18:00",
+      "fares": {
+        "low_season": {
+          "single": 225.0,
+          "return": 225.0
+        },
+        "high_season": {
+          "single": 225.0,
+          "return": 225.0
+        }
+      },
+      "notes_keys": [
+        "b"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only."
+      ]
+    },
+    {
+      "flight_no": "7",
+      "from": "Nairobi (Wilson)",
+      "to": "Migori",
+      "days_of_operation": "D",
+      "depart": "11:30",
+      "arrive": "12:00",
+      "fares": {
+        "low_season": {
+          "single": 272.0,
+          "return": 272.0
+        },
+        "high_season": {
+          "single": 272.0,
+          "return": 272.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "c",
+        "e"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Flights 41, 42, 07 & 08 connect to flights into/from northern Tanzania (bookable). Services to Kilimanjaro & Migori subject to minimum 6 pax in low season and 4 pax in high season.",
+        "Masai Mara flights: Flight 01 can route via Naivasha (Loldia); Loldia strip subject to min 4 pax year-round. Flights 03-09 subject to min 4 pax in both seasons. Landings limited to max 4 stops per aircraft."
+      ]
+    },
+    {
+      "flight_no": "8",
+      "from": "Migori",
+      "to": "Masai Mara",
+      "days_of_operation": "D",
+      "depart": "12:15",
+      "arrive": "12:05",
+      "fares": {
+        "low_season": {
+          "single": 272.0,
+          "return": 272.0
+        },
+        "high_season": {
+          "single": 272.0,
+          "return": 272.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "c",
+        "e"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Flights 41, 42, 07 & 08 connect to flights into/from northern Tanzania (bookable). Services to Kilimanjaro & Migori subject to minimum 6 pax in low season and 4 pax in high season.",
+        "Masai Mara flights: Flight 01 can route via Naivasha (Loldia); Loldia strip subject to min 4 pax year-round. Flights 03-09 subject to min 4 pax in both seasons. Landings limited to max 4 stops per aircraft."
+      ]
+    },
+    {
+      "flight_no": "47",
+      "from": "Nairobi (Wilson)",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "17:40",
+      "arrive": "18:45",
+      "fares": {
+        "low_season": {
+          "single": 215.0,
+          "return": 215.0
+        },
+        "high_season": {
+          "single": 215.0,
+          "return": 215.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "h"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Flights 45 & 46 route Wilson – Mombasa – Zanzibar – Mombasa – Wilson in low season; Flights 47 & 48 operate in high season only and route Nairobi - Zanzibar – Mombasa – Wilson."
+      ]
+    },
+    {
+      "flight_no": "46",
+      "from": "Mombasa",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "19:10",
+      "arrive": "20:20",
+      "fares": {
+        "low_season": {
+          "single": 215.0,
+          "return": 215.0
+        },
+        "high_season": {
+          "single": 215.0,
+          "return": 215.0
+        }
+      },
+      "notes_keys": [
+        "h",
+        "i"
+      ],
+      "notes_expanded": [
+        "Flights 45 & 46 route Wilson – Mombasa – Zanzibar – Mombasa – Wilson in low season; Flights 47 & 48 operate in high season only and route Nairobi - Zanzibar – Mombasa – Wilson.",
+        "These flight timings apply in low season only."
+      ]
+    },
+    {
+      "flight_no": "45",
+      "from": "Nairobi (Wilson)",
+      "to": "Zanzibar",
+      "days_of_operation": "1,4,5,7",
+      "depart": "16:10",
+      "arrive": "16:55",
+      "fares": {
+        "low_season": {
+          "single": 250.0,
+          "return": 250.0
+        },
+        "high_season": {
+          "single": 250.0,
+          "return": 250.0
+        }
+      },
+      "notes_keys": [
+        "h",
+        "i"
+      ],
+      "notes_expanded": [
+        "Flights 45 & 46 route Wilson – Mombasa – Zanzibar – Mombasa – Wilson in low season; Flights 47 & 48 operate in high season only and route Nairobi - Zanzibar – Mombasa – Wilson.",
+        "These flight timings apply in low season only."
+      ]
+    },
+    {
+      "flight_no": "1",
+      "from": "Naivasha (Loldia)",
+      "to": "Masai Mara",
+      "days_of_operation": "D",
+      "depart": "10:15          11:00",
+      "arrive": null,
+      "fares": {
+        "low_season": {
+          "single": 256.0,
+          "return": 256.0
+        },
+        "high_season": {
+          "single": 256.0,
+          "return": 256.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "e"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Masai Mara flights: Flight 01 can route via Naivasha (Loldia); Loldia strip subject to min 4 pax year-round. Flights 03-09 subject to min 4 pax in both seasons. Landings limited to max 4 stops per aircraft."
+      ]
+    },
+    {
+      "flight_no": "48",
+      "from": "Nairobi (Wilson)",
+      "to": "Nairobi (Wilson)",
+      "days_of_operation": "D",
+      "depart": "16:00",
+      "arrive": "18:45",
+      "fares": {
+        "low_season": {
+          "single": 325.0,
+          "return": 325.0
+        },
+        "high_season": {
+          "single": 325.0,
+          "return": 325.0
+        }
+      },
+      "notes_keys": [
+        "b",
+        "h"
+      ],
+      "notes_expanded": [
+        "These flights operate during high seasons only.",
+        "Flights 45 & 46 route Wilson – Mombasa – Zanzibar – Mombasa – Wilson in low season; Flights 47 & 48 operate in high season only and route Nairobi - Zanzibar – Mombasa – Wilson."
+      ]
+    },
+    {
+      "flight_no": "46",
+      "from": "Nairobi (Wilson)",
+      "to": "Mombasa",
+      "days_of_operation": "1,4,5,7",
+      "depart": "17:25",
+      "arrive": "18:10",
+      "fares": {
+        "low_season": {
+          "single": 250.0,
+          "return": 250.0
+        },
+        "high_season": {
+          "single": 250.0,
+          "return": 250.0
+        }
+      },
+      "notes_keys": [
+        "i"
+      ],
+      "notes_expanded": [
+        "These flight timings apply in low season only."
+      ]
+    }
+  ],
+  "notes_legend": {
+    "a": "Combined service for Amboseli and Tsavo West (Flights 11-16). Flights 11-14 operate subject to minimum 4 passengers per service and minimum 2 passengers per airstrip. Flights 15 & 16 operate subject to minimum 4 passengers in high season and do not operate in low season. Airstrips: Amboseli, Kimana, Oldonyo and Finch Hattons. Kimana subject to minimum 4 pax at a supplement.",
+    "b": "These flights operate during high seasons only.",
+    "c": "Flights 41, 42, 07 & 08 connect to flights into/from northern Tanzania (bookable). Services to Kilimanjaro & Migori subject to minimum 6 pax in low season and 4 pax in high season.",
+    "d": "Flights 21,23,24,25 &31 serve Nanyuki, Kamok, Lewa, Loisaba, Sasaab and Samburu; times may vary by 40+ minutes. Except flight 25, operate subject to min 4 passengers per service and 2 per airstrip year-round. Flight 25 operates in high season only (min 4 per service, 2 per airstrip). Nanyuki & Kamok may be combined.",
+    "e": "Masai Mara flights: Flight 01 can route via Naivasha (Loldia); Loldia strip subject to min 4 pax year-round. Flights 03-09 subject to min 4 pax in both seasons. Landings limited to max 4 stops per aircraft.",
+    "f": "Flight 31 operates in high season only. In low season passengers may be routed via Wilson using Flights 24 & 03.",
+    "g": "Flights 51 & 52 route Wilson – Malindi – Lamu – Malindi – Wilson.",
+    "h": "Flights 45 & 46 route Wilson – Mombasa – Zanzibar – Mombasa – Wilson in low season; Flights 47 & 48 operate in high season only and route Nairobi - Zanzibar – Mombasa – Wilson.",
+    "i": "These flight timings apply in low season only."
+  }
+}

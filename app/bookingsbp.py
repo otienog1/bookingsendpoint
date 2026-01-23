@@ -732,3 +732,62 @@ def empty_trash(current_user):
         current_app.logger.error(error_msg)
         current_app.logger.error(traceback.format_exc())
         return jsonify({"error": error_msg}), 500
+
+
+# =============================================================================
+# ITINERARY ENDPOINTS
+# =============================================================================
+
+@bookingsbp.route("/api/bookings/<booking_id>/itineraries", methods=["GET"])
+@token_required
+def get_booking_itineraries(current_user, booking_id):
+    """
+    Get all itineraries for a specific booking.
+
+    Endpoint: GET /api/bookings/<booking_id>/itineraries
+
+    Query params:
+        active_only: If true, only return active itineraries (default: true)
+        type: Filter by itinerary type (optional)
+
+    Args:
+        booking_id: Booking ID (MongoDB ObjectId string)
+
+    Returns:
+        List of itineraries for the booking
+    """
+    try:
+        from .api_standards import ApiResponse
+        from .scraper.itinerary_model import ItineraryModel
+
+        # Verify booking exists and user has access
+        booking = Booking.find_by_id(booking_id)
+        if not booking:
+            return ApiResponse.error('Booking not found', status=404)
+
+        # Check permissions (booking owner or admin)
+        if str(booking['user_id']) != str(current_user['_id']) and current_user['role'] != 'admin':
+            return ApiResponse.error('Unauthorized access', status=403)
+
+        # Get query parameters
+        active_only = request.args.get('active_only', 'true').lower() == 'true'
+        itinerary_type = request.args.get('type', None)
+
+        # Get itineraries
+        model = ItineraryModel(mongo)
+
+        if itinerary_type:
+            # Get specific type
+            itinerary = model.find_by_booking_and_type(booking_id, itinerary_type, active_only)
+            if not itinerary:
+                return ApiResponse.success({'items': [], 'total': 0})
+            return ApiResponse.success({'items': [itinerary], 'total': 1})
+        else:
+            # Get all itineraries for booking
+            itineraries = model.find_by_booking(booking_id, active_only)
+            return ApiResponse.success({'items': itineraries, 'total': len(itineraries)})
+
+    except Exception as e:
+        current_app.logger.error(f"Error fetching itineraries for booking {booking_id}: {str(e)}")
+        current_app.logger.error(traceback.format_exc())
+        return jsonify({"error": "Failed to fetch itineraries"}), 500

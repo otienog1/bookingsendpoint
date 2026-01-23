@@ -1,0 +1,274 @@
+{
+    "meta": {
+        "validity": "2024-12-21 to 2025-12-20",
+        "high_season": [
+            "2024-12-21 to 2025-02-28",
+            "2025-06-01 to 2025-10-31"
+        ],
+        "low_season": [
+            "2025-03-01 to 2025-05-31",
+            "2025-11-01 to 2025-12-15"
+        ],
+        "check_in": {
+            "major_airports": "60 minutes before departure",
+            "bush_airstrips": "30 minutes before departure"
+        },
+        "contacts": {
+            "call_centre": [
+                "+254202916000",
+                "+254203925000"
+            ],
+            "operations": [
+                "+254706085534",
+                "+254727131977"
+            ],
+            "emails": [
+                "resvns@airkenya.com",
+                "marketing@airkenya.com"
+            ],
+            "charters": "charters@airkenya.com"
+        }
+    },
+    "flights": [
+        {
+            "flight_no": "P2 883",
+            "from": "Wilson",
+            "to": "Amboseli",
+            "depart": "07:30",
+            "arrive": "08:05",
+            "region": "Amboseli",
+            "min_pax": 2,
+            "season_exceptions": null,
+            "notes": [
+                "Daily service",
+                "Connects from Wilson to Nanyuki/Lewa/Samburu/Meru/Loisaba at 10:00",
+                "Connects to Masai Mara at 10:30 and Kilimanjaro at 13:30"
+            ]
+        },
+        {
+            "flight_no": "P2 884",
+            "from": "Amboseli",
+            "to": "Wilson",
+            "depart": "08:15",
+            "arrive": "08:50",
+            "region": "Amboseli",
+            "min_pax": 2,
+            "season_exceptions": null,
+            "notes": []
+        },
+        {
+            "flight_no": "P2 821",
+            "from": "Wilson",
+            "to": "Kilimanjaro",
+            "depart": "13:30",
+            "arrive": "14:25",
+            "region": "Kilimanjaro",
+            "min_pax": 4,
+            "season_exceptions": {
+                "non_operational": [
+                    "2025-04-01 to 2025-05-31",
+                    "2025-11-01 to 2025-12-15"
+                ]
+            },
+            "notes": [
+                "Connects to Arusha, Manyara, Seronera and Lobo at 15:30"
+            ]
+        },
+        {
+            "flight_no": "P2 822",
+            "from": "Kilimanjaro",
+            "to": "Wilson",
+            "depart": "14:40",
+            "arrive": "15:35",
+            "region": "Kilimanjaro",
+            "min_pax": 4,
+            "season_exceptions": {
+                "non_operational": [
+                    "2025-04-01 to 2025-05-31",
+                    "2025-11-01 to 2025-12-15"
+                ]
+            },
+            "notes": []
+        },
+        {
+            "flight_no": "P2 871",
+            "from": "Wilson",
+            "to": [
+                "Lewa Downs",
+                "Loisaba",
+                "Meru",
+                "Nanyuki",
+                "Samburu"
+            ],
+            "depart": "10:00",
+            "arrive": "11:00",
+            "region": "Northern Kenya",
+            "min_pax": 2,
+            "notes": [
+                "Arrivals may vary up to 45 minutes depending on routing"
+            ]
+        },
+        {
+            "flight_no": "P2 872",
+            "from": [
+                "Lewa Downs",
+                "Loisaba",
+                "Meru",
+                "Nanyuki",
+                "Samburu"
+            ],
+            "to": "Wilson",
+            "depart": "11:15",
+            "arrive": "13:25",
+            "region": "Northern Kenya",
+            "min_pax": 2,
+            "notes": [
+                "Connects to Kilimanjaro at 13:30",
+                "Connects to Masai Mara at 14:00"
+            ]
+        },
+        {
+            "flight_no": "P2 862",
+            "from": [
+                "Lewa Downs",
+                "Loisaba",
+                "Meru",
+                "Nanyuki",
+                "Samburu"
+            ],
+            "to": "Masai Mara",
+            "depart": "11:15",
+            "arrive": "13:15",
+            "region": "Northern Kenya → Masai Mara",
+            "min_pax": 2,
+            "season_exceptions": {
+                "low_season_routing": "May route via Wilson to connect to 14:00 Mara flight"
+            },
+            "notes": []
+        },
+        {
+            "flight_no": "P2 851",
+            "from": "Wilson",
+            "to": "Masai Mara",
+            "depart": "07:30",
+            "arrive": "08:10",
+            "region": "Masai Mara",
+            "min_pax": 2,
+            "notes": []
+        },
+        {
+            "flight_no": "P2 852",
+            "from": "Masai Mara",
+            "to": "Wilson",
+            "depart": "08:15",
+            "arrive": "09:45",
+            "region": "Masai Mara",
+            "min_pax": 2,
+            "notes": [
+                "Connects to Northern Kenya flights at 10:00",
+                "Connects to Kilimanjaro at 13:30"
+            ]
+        },
+        {
+            "flight_no": "P2 853",
+            "from": "Wilson",
+            "to": "Masai Mara",
+            "depart": "10:30",
+            "arrive": "11:10",
+            "region": "Masai Mara",
+            "min_pax": 2
+        },
+        {
+            "flight_no": "P2 854",
+            "from": "Masai Mara",
+            "to": "Wilson",
+            "depart": "11:15",
+            "arrive": "13:00",
+            "region": "Masai Mara",
+            "min_pax": 2
+        },
+        {
+            "flight_no": "P2 951",
+            "from": "Wilson",
+            "to": "Masai Mara",
+            "depart": "14:00",
+            "arrive": "14:40",
+            "region": "Masai Mara",
+            "min_pax": 2
+        },
+        {
+            "flight_no": "P2 952",
+            "from": "Masai Mara",
+            "to": "Wilson",
+            "depart": "14:45",
+            "arrive": "16:15",
+            "region": "Masai Mara",
+            "min_pax": 2
+        },
+        {
+            "flight_no": "P2 453",
+            "from": "Masai Mara",
+            "to": [
+                "Migori",
+                "Tarime"
+            ],
+            "depart": "08:15",
+            "arrive": [
+                "09:00",
+                "10:10"
+            ],
+            "region": "Mara–Migori–Tarime",
+            "min_pax": {
+                "high_season": 2,
+                "low_season": 4
+            },
+            "notes": [
+                "Includes road transfer between Migori and Tarime",
+                "Links to Regional Air, Auric Air, Coastal Aviation for Serengeti"
+            ]
+        },
+        {
+            "flight_no": "P2 454",
+            "from": [
+                "Tarime",
+                "Migori"
+            ],
+            "to": "Masai Mara",
+            "depart": [
+                "10:30",
+                "11:30"
+            ],
+            "arrive": "12:40",
+            "region": "Mara–Migori–Tarime",
+            "min_pax": {
+                "high_season": 2,
+                "low_season": 4
+            }
+        }
+    ],
+    "connections": {
+        "Wilson": {
+            "northbound_10_00": [
+                "Lewa Downs",
+                "Loisaba",
+                "Meru",
+                "Samburu",
+                "Nanyuki"
+            ],
+            "mara_10_30": [
+                "Masai Mara"
+            ],
+            "kili_13_30": [
+                "Kilimanjaro"
+            ]
+        },
+        "Masai_Mara": {
+            "connects_to": [
+                "Serengeti",
+                "Uganda",
+                "Tarime",
+                "Migori"
+            ]
+        }
+    }
+}

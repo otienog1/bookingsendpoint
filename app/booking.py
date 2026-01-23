@@ -33,6 +33,9 @@ class Booking(db.Model, TimestampMixin):
     # Notes field for additional information
     notes = db.Column(db.Text, nullable=True)
 
+    # Note: itinerary_id field removed - itineraries now reference bookings
+    # Use the itinerary API to fetch itineraries by booking_id (one-to-many relationship)
+
     # Define relationship to User model
     user = db.relationship('User', backref=db.backref('bookings', lazy=True))
 
